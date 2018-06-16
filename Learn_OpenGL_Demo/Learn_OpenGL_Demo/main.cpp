@@ -18,6 +18,8 @@
 #include <unordered_map>
 #include <random>
 
+#include "learn.h"
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -30,7 +32,7 @@ const unsigned int SCR_HEIGHT = 600;
 
 std::mutex mtx;           // mutex for critical section
 std::unique_lock<std::mutex> lck (mtx,std::defer_lock);
-Robot rob(&mtx);
+Robot rob(&mtx, 2.0f);
 
 // camera
 Camera camera(glm::vec3(0.75f, 2.0f, 8.0f));
@@ -43,15 +45,16 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // lighting
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightPos(6.2f, 4.0f, 5.0f);
 
 void runSim(Robot *rob){
-    rob->simulate();
+    rob->simulate(500,1000);
 }
 
 int main()
 {
     srand(time(0));
+    rand();
     
     // glfw: initialize and configure
     // ------------------------------
@@ -227,6 +230,9 @@ int main()
     }
     
     
+    // MARK: learn::hillClimber
+    //rob = *learn::hillClimber(20);
+    
     std::thread thrd = std::thread(runSim, &rob);
 //    thrd.join();
 //    return 0;
@@ -374,6 +380,10 @@ void processInput(GLFWwindow *window)
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        camera.ProcessKeyboard(DOWN, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        camera.ProcessKeyboard(UP, deltaTime);
     
     
     
@@ -397,9 +407,7 @@ void processInput(GLFWwindow *window)
     
     static int oldAttachedState = GLFW_PRESS;
     if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS && oldAttachedState != GLFW_PRESS){
-        glm::vec3 c = rob.calcCentroid();
-        Mass *m = new Mass(glm::vec3(c[0],c[1]+3,c[2]),MASS_WEIGHT);
-        rob.attachMass(5);
+        rob.mutateMasses();
     }
     oldAttachedState = glfwGetKey(window, GLFW_KEY_T);
     

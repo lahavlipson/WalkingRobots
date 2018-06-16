@@ -31,7 +31,7 @@
 
 const float GRAVITY = -9.81;
 const float GROUND_LEVEL = 0.0;
-const float DRAG = 0.03; //(0 = no grag)
+
 
 class Robot {
     
@@ -41,13 +41,22 @@ private:
     
 public:
     std::unordered_set<Mass *> masses;
-    std::mutex *mtx;
+    std::mutex *mtx = NULL;
     std::unordered_map<Spring *,std::tuple<Mass *, Mass *>> springsMap;
     glm::vec3 pushForce;
     bool stopSim = false;
+    bool wasSimulated = false;
+    float frequency;
     
-    Robot(std::mutex *mutex):mtx(mutex){}
-    Robot(){}
+    Robot(std::mutex *mutex, float freq):mtx(mutex),frequency(freq){}
+    
+    Robot(){} //breaks things :(
+    
+    Robot& operator=(const Robot& old_robot);
+    
+    Robot (const Robot &old_robot){
+        *this = old_robot;
+    }
     
     glm::vec3 calcCentroid();
     
@@ -55,13 +64,30 @@ public:
     
     void removeMass(Mass *m);
     
-    void attachMass(int connections, Mass *m = NULL);
+    void attachMass(int connections, Mass *m);
+    
+    void mutateMasses(){
+        Mass *m = new Mass(getPointToSpawnMass(), MASS_WEIGHT);
+        attachMass(3, m);
+    }
+    
+    void mutateSprings(){
+        int index = rand()%(springsMap.size());
+        Spring *s = getSprings()[index];
+        float r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/(2*M_PI)));
+        s->b = r;
+    }
     
     std::vector<Spring *> getSprings();
     
     void addSpring(Mass *m1, Mass *m2, float constant);
     
-    void simulate();
+    float simulate(int uwait, int cycles = 1000000);
+    
+    void canDeRefMasses() const{
+        for (Mass *mp : masses)
+            Mass m = *mp;
+    }
     
     ~Robot(){
         for (Mass *m : masses)

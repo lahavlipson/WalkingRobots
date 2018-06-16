@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <iostream>
 
-const float SPRING_CONST = 800.0;
+const float SPRING_CONST = 8000.0;
 
 //void pv3(glm::vec3 v){
 //    std::cout << "(" << v[0] << ", " << v[0] << ", " << v[0] << ")\n";
@@ -38,8 +38,8 @@ private:
     }
     
 public:
-    glm::vec3 *p1;
-    glm::vec3 *p2;
+    glm::vec3 *p1 = NULL;
+    glm::vec3 *p2 = NULL;
     float k;
     
     //For oscillation
@@ -47,15 +47,19 @@ public:
     float b;//won't change anything rn
     float w;
     
-//    Spring(glm::vec3 *pos1, glm::vec3 *pos2, float constant):p1(pos1),p2(pos2),k(constant){
-//        l_0 = glm::length(*pos2 - *pos1);
-//    }
-    
     Spring(glm::vec3 *pos1, glm::vec3 *pos2, float constant, float amplitude, float phase, float frequency):p1(pos1),p2(pos2),k(constant), a(amplitude), b(phase), w(frequency){
         const float currentLength = glm::length(*pos2 - *pos1);
         const float calculatedRestLength = a*sinf(b);
         l_0 = currentLength - calculatedRestLength;
-        
+    }
+    
+    Spring (const Spring &old_spring){
+        k = old_spring.k;
+        a = old_spring.a;
+        b = old_spring.b;
+        w = old_spring.w;
+        l_0 = old_spring.l_0;
+        //Pointers will be null;
     }
     
     double calcLength(){
@@ -63,14 +67,26 @@ public:
     }
     
     float calcForce(float t = -1){
-        if (t<0)
-            t = -b/w;
-       // std::cout << calcLength() << " " << l_0 << "\n";
-        return -k*float(calcLength() - calcRestLength(t));
+//        if (t<0)
+//            t = -b/w;
+        float v = -k*float(calcLength() - calcRestLength(t));
+        const float maxStrength = 400;
+        return v;
+//        if (v < 0){
+//           // std::cout << v << std::endl;
+//           // assert(v > -70000);
+//            return std::fmaxf(-maxStrength,v);
+//        }
+//        else{
+//          //  std::cout << v << std::endl;
+//          //  assert(v < 70000);
+//            return std::fminf(maxStrength,v);
+//        }
         
     }
     
     glm::vec3 getVectorPointingToMass(glm::vec3 *pos_ptr){
+        assert(p1 != NULL && p2 != NULL);
         glm::vec3 v = glm::normalize(*p1-*p2);
         if (pos_ptr == p1)
             return v;

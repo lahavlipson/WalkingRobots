@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CD2CE19020CFB99200258630 /* mass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD6C2B6E20C503920033D186 /* mass.cpp */; };
 		CD3979D320C0450F004A30AD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD3979D220C0450F004A30AD /* main.cpp */; };
 		CD3979DA20C05096004A30AD /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = CD3979D920C05096004A30AD /* glad.c */; };
 		CD3979DD20C05ED5004A30AD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3979DC20C05ED5004A30AD /* Cocoa.framework */; };
@@ -14,7 +15,7 @@
 		CD3979E120C05EF1004A30AD /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3979E020C05EF1004A30AD /* OpenGL.framework */; };
 		CD3979E320C05F2D004A30AD /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3979E220C05F2D004A30AD /* CoreVideo.framework */; };
 		CD3979ED20C0C027004A30AD /* stb_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD3979EB20C0C027004A30AD /* stb_image.cpp */; };
-		CD6C2B7020C503920033D186 /* mass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD6C2B6E20C503920033D186 /* mass.cpp */; };
+		CD39ACFB20D396F9004F6EE0 /* libiomp5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CD39ACFA20D396F9004F6EE0 /* libiomp5.dylib */; };
 		CD6C2B7320C509440033D186 /* spring.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD6C2B7120C509440033D186 /* spring.cpp */; };
 		CD6C2B7620C622D30033D186 /* robot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD6C2B7420C622D30033D186 /* robot.cpp */; };
 /* End PBXBuildFile section */
@@ -32,6 +33,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CD2CE19120CFBA5800258630 /* learn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = learn.h; sourceTree = "<group>"; };
 		CD3979CF20C0450F004A30AD /* Learn_OpenGL_Demo */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Learn_OpenGL_Demo; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD3979D220C0450F004A30AD /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		CD3979D920C05096004A30AD /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = glad.c; path = ../../../../Downloads/glad/src/glad.c; sourceTree = "<group>"; };
@@ -42,6 +44,7 @@
 		CD3979E420C0A046004A30AD /* shader_s.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = shader_s.h; sourceTree = "<group>"; };
 		CD3979EB20C0C027004A30AD /* stb_image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = stb_image.cpp; sourceTree = "<group>"; };
 		CD3979EC20C0C027004A30AD /* stb_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
+		CD39ACFA20D396F9004F6EE0 /* libiomp5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiomp5.dylib; path = ../../../../../usr/local/Cellar/llvm/6.0.0/lib/libiomp5.dylib; sourceTree = "<group>"; };
 		CD6C2B6920C235490033D186 /* camera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = camera.h; sourceTree = "<group>"; };
 		CD6C2B6E20C503920033D186 /* mass.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mass.cpp; sourceTree = "<group>"; };
 		CD6C2B6F20C503920033D186 /* mass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mass.h; sourceTree = "<group>"; };
@@ -57,6 +60,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD39ACFB20D396F9004F6EE0 /* libiomp5.dylib in Frameworks */,
 				CD3979E320C05F2D004A30AD /* CoreVideo.framework in Frameworks */,
 				CD3979E120C05EF1004A30AD /* OpenGL.framework in Frameworks */,
 				CD3979DF20C05EEA004A30AD /* IOKit.framework in Frameworks */,
@@ -90,6 +94,7 @@
 				CD3979D220C0450F004A30AD /* main.cpp */,
 				CD6C2B7420C622D30033D186 /* robot.cpp */,
 				CD6C2B7520C622D30033D186 /* robot.h */,
+				CD2CE19120CFBA5800258630 /* learn.h */,
 				CD6C2B6E20C503920033D186 /* mass.cpp */,
 				CD6C2B6F20C503920033D186 /* mass.h */,
 				CD6C2B7120C509440033D186 /* spring.cpp */,
@@ -107,6 +112,7 @@
 		CD3979DB20C05ED5004A30AD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CD39ACFA20D396F9004F6EE0 /* libiomp5.dylib */,
 				CD3979E220C05F2D004A30AD /* CoreVideo.framework */,
 				CD3979E020C05EF1004A30AD /* OpenGL.framework */,
 				CD3979DE20C05EEA004A30AD /* IOKit.framework */,
@@ -173,10 +179,10 @@
 			files = (
 				CD6C2B7620C622D30033D186 /* robot.cpp in Sources */,
 				CD3979ED20C0C027004A30AD /* stb_image.cpp in Sources */,
-				CD6C2B7020C503920033D186 /* mass.cpp in Sources */,
 				CD3979D320C0450F004A30AD /* main.cpp in Sources */,
 				CD3979DA20C05096004A30AD /* glad.c in Sources */,
 				CD6C2B7320C509440033D186 /* spring.cpp in Sources */,
+				CD2CE19020CFB99200258630 /* mass.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,19 +301,27 @@
 		CD3979D720C0450F004A30AD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CC = /usr/local/opt/llvm/bin/clang;
+				CLANG_ENABLE_MODULES = NO;
 				CODE_SIGN_STYLE = Automatic;
+				COMPILER_INDEX_STORE_ENABLE = NO;
 				DEVELOPMENT_TEAM = SBGX5Q9V65;
 				HEADER_SEARCH_PATHS = (
 					/Users/lahavlipson/Personal,
 					"/Users/lahavlipson/Personal\\ Projects/Learn_OpenGL/build/Third_prty_libs/Includes/GLFW",
 					"/Users/lahavlipson/Personal\\ Projects/Learn_OpenGL/build/Third_prty_libs/Includes",
+					/usr/local/opt/llvm/lib/clang/6.0.0/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"/Users/lahavlipson/Personal\\ Projects/Learn_OpenGL/build/Third_prty_libs/Libs",
+					/Users/lahavlipson/Personal,
+					Projects/Learn_OpenGL/build/Third_prty_libs/Libs,
 					/usr/local/lib,
 					/usr/local/Cellar/glfw/3.2.1/lib,
+					/usr/local/opt/llvm/lib,
+					/usr/local/Cellar/llvm/6.0.0/lib,
 				);
-				OTHER_LDFLAGS = "-lglfw3";
+				OTHER_CFLAGS = "-fopenmp";
+				OTHER_LDFLAGS = "-lglfw";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -315,19 +329,27 @@
 		CD3979D820C0450F004A30AD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CC = /usr/local/opt/llvm/bin/clang;
+				CLANG_ENABLE_MODULES = NO;
 				CODE_SIGN_STYLE = Automatic;
+				COMPILER_INDEX_STORE_ENABLE = NO;
 				DEVELOPMENT_TEAM = SBGX5Q9V65;
 				HEADER_SEARCH_PATHS = (
 					/Users/lahavlipson/Personal,
 					"/Users/lahavlipson/Personal\\ Projects/Learn_OpenGL/build/Third_prty_libs/Includes/GLFW",
 					"/Users/lahavlipson/Personal\\ Projects/Learn_OpenGL/build/Third_prty_libs/Includes",
+					/usr/local/opt/llvm/lib/clang/6.0.0/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"/Users/lahavlipson/Personal\\ Projects/Learn_OpenGL/build/Third_prty_libs/Libs",
+					/Users/lahavlipson/Personal,
+					Projects/Learn_OpenGL/build/Third_prty_libs/Libs,
 					/usr/local/lib,
 					/usr/local/Cellar/glfw/3.2.1/lib,
+					/usr/local/opt/llvm/lib,
+					/usr/local/Cellar/llvm/6.0.0/lib,
 				);
-				OTHER_LDFLAGS = "-lglfw3";
+				OTHER_CFLAGS = "-fopenmp";
+				OTHER_LDFLAGS = "-lglfw";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

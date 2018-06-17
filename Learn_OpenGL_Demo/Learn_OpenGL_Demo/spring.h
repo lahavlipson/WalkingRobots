@@ -67,22 +67,9 @@ public:
     }
     
     float calcForce(float t = -1){
-//        if (t<0)
-//            t = -b/w;
         float v = -k*float(calcLength() - calcRestLength(t));
-        const float maxStrength = 400;
+        const float maxStrength = 400;//70000 happens during snaps often
         return v;
-//        if (v < 0){
-//           // std::cout << v << std::endl;
-//           // assert(v > -70000);
-//            return std::fmaxf(-maxStrength,v);
-//        }
-//        else{
-//          //  std::cout << v << std::endl;
-//          //  assert(v < 70000);
-//            return std::fminf(maxStrength,v);
-//        }
-        
     }
     
     glm::vec3 getVectorPointingToMass(glm::vec3 *pos_ptr){
@@ -91,6 +78,10 @@ public:
         if (pos_ptr == p1)
             return v;
         return v*float(-1.0);
+    }
+    
+    friend std::ostream &operator<<(std::ostream &os, Spring &s) {
+        return os<<s.l_0<<"|"<<s.k<<"|"<<s.a<<"|"<<s.b<<"|"<<s.w<<"|"<<s.p1<<","<<s.p2;
     }
 
 };

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CD2CE19020CFB99200258630 /* mass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD6C2B6E20C503920033D186 /* mass.cpp */; };
 		CD3979D320C0450F004A30AD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD3979D220C0450F004A30AD /* main.cpp */; };
 		CD3979DA20C05096004A30AD /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = CD3979D920C05096004A30AD /* glad.c */; };
 		CD3979DD20C05ED5004A30AD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3979DC20C05ED5004A30AD /* Cocoa.framework */; };
@@ -16,7 +15,6 @@
 		CD3979E320C05F2D004A30AD /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3979E220C05F2D004A30AD /* CoreVideo.framework */; };
 		CD3979ED20C0C027004A30AD /* stb_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD3979EB20C0C027004A30AD /* stb_image.cpp */; };
 		CD39ACFB20D396F9004F6EE0 /* libiomp5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CD39ACFA20D396F9004F6EE0 /* libiomp5.dylib */; };
-		CD6C2B7320C509440033D186 /* spring.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD6C2B7120C509440033D186 /* spring.cpp */; };
 		CD6C2B7620C622D30033D186 /* robot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD6C2B7420C622D30033D186 /* robot.cpp */; };
 /* End PBXBuildFile section */
 
@@ -46,9 +44,7 @@
 		CD3979EC20C0C027004A30AD /* stb_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
 		CD39ACFA20D396F9004F6EE0 /* libiomp5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiomp5.dylib; path = ../../../../../usr/local/Cellar/llvm/6.0.0/lib/libiomp5.dylib; sourceTree = "<group>"; };
 		CD6C2B6920C235490033D186 /* camera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = camera.h; sourceTree = "<group>"; };
-		CD6C2B6E20C503920033D186 /* mass.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mass.cpp; sourceTree = "<group>"; };
 		CD6C2B6F20C503920033D186 /* mass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mass.h; sourceTree = "<group>"; };
-		CD6C2B7120C509440033D186 /* spring.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = spring.cpp; sourceTree = "<group>"; };
 		CD6C2B7220C509440033D186 /* spring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spring.h; sourceTree = "<group>"; };
 		CD6C2B7420C622D30033D186 /* robot.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = robot.cpp; sourceTree = "<group>"; };
 		CD6C2B7520C622D30033D186 /* robot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = robot.h; sourceTree = "<group>"; };
@@ -95,9 +91,7 @@
 				CD6C2B7420C622D30033D186 /* robot.cpp */,
 				CD6C2B7520C622D30033D186 /* robot.h */,
 				CD2CE19120CFBA5800258630 /* learn.h */,
-				CD6C2B6E20C503920033D186 /* mass.cpp */,
 				CD6C2B6F20C503920033D186 /* mass.h */,
-				CD6C2B7120C509440033D186 /* spring.cpp */,
 				CD6C2B7220C509440033D186 /* spring.h */,
 				CD6C2B6920C235490033D186 /* camera.h */,
 				CD3979EB20C0C027004A30AD /* stb_image.cpp */,
@@ -181,8 +175,6 @@
 				CD3979ED20C0C027004A30AD /* stb_image.cpp in Sources */,
 				CD3979D320C0450F004A30AD /* main.cpp in Sources */,
 				CD3979DA20C05096004A30AD /* glad.c in Sources */,
-				CD6C2B7320C509440033D186 /* spring.cpp in Sources */,
-				CD2CE19020CFB99200258630 /* mass.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

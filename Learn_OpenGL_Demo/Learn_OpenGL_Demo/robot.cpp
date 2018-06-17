@@ -179,7 +179,7 @@ float Robot::simulate(int uwait, int cycles){//std::vector<double> &rodBufferDat
             force[1] = force[1] + ms->m*GRAVITY;
             force = force + pushForce;
             const float DRAG = 0.01; //(0 = no drag)
-            force = force - ms->v*DRAG*(std::pow(glm::length(ms->v),2.0f)); //add a force that is prop to v^2 and the direction of the force is opposite the direction of velocity
+            force = force - ms->v*DRAG*(std::pow(glm::length(ms->v),1.0f)); //add a force that is prop to v^2 and the direction of the force is opposite the direction of velocity
             for (Spring *spr : ms->springs){
                 glm::vec3 springForce = (spr->getVectorPointingToMass(&(ms->pos)))*(spr->calcForce(t));
                 force = force + springForce;

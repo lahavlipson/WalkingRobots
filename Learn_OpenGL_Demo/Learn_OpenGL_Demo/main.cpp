@@ -17,6 +17,8 @@
 #include <iostream>
 #include <unordered_map>
 #include <random>
+#include <string>
+#include <sstream>
 
 #include "learn.h"
 
@@ -51,10 +53,40 @@ void runSim(Robot *rob){
     rob->simulate(500,1000);
 }
 
+int renderRob();
+
 int main()
 {
     srand(time(0));
     rand();
+    
+    Robot cube = *learn::getCube();
+    
+    
+    std::ostringstream stream;
+    for (Spring *s : cube.getSprings())
+        stream << *s << std::endl;
+    std::string str =  stream.str();
+    const char* chr = str.c_str();
+    std::cout << chr << std::endl;
+    
+    
+    // MARK: learn::hillClimber
+    rob = *learn::hillClimber(20);
+    //rob = *learn::getCube();
+    
+    std::thread thrd = std::thread(runSim, &rob);
+    renderRob();
+    
+    
+    thrd.join();
+    return 0;
+    
+}
+
+
+int renderRob(){
+    
     
     // glfw: initialize and configure
     // ------------------------------
@@ -181,29 +213,6 @@ int main()
     //FLOOR**********************
     
     
-//    Mass *m1 = new Mass(glm::vec3(0,0,0),0.2);
-//    Mass *m2 = new Mass(glm::vec3(3,1,0),0.2);
-//    Mass *m3 = new Mass(glm::vec3(-1,-1,-1),2);
-//
-//    rob.addMass(m1);
-//    rob.addMass(m2);
-//    rob.addMass(m3);
-
-    
-    std::vector<Mass *> masses;
-    const float ROD_LENGTH = 1.5;
-    masses.push_back(new Mass(glm::vec3(0,0,0),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(ROD_LENGTH,0,0),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(0,ROD_LENGTH,0),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(ROD_LENGTH,ROD_LENGTH,0),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(0,0,-ROD_LENGTH),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(ROD_LENGTH,0,-ROD_LENGTH),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(0,ROD_LENGTH,-ROD_LENGTH),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(ROD_LENGTH,ROD_LENGTH,-ROD_LENGTH),MASS_WEIGHT));
-    
-    for (Mass *m : masses)
-        rob.addMass(m);
-    
     //Masses
     std::vector<double> sphereVerts = glp::sphere(3, SPHERE_SIZE);
     unsigned int sphere_VBO, sphere_VAO;
@@ -218,26 +227,6 @@ int main()
     // normal attribute
     glVertexAttribPointer(1, 3, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (void*)(3 * sizeof(double)));
     glEnableVertexAttribArray(1);
-    
-    
-    //Springs
-
-    for (int i=0; i<masses.size(); i++){
-        for (int j=i+1; j<masses.size(); j++){
-            //Spring *spr = new Spring(masses[i]->mp(),masses[j]->mp(),8);
-            rob.addSpring(masses[i],masses[j],SPRING_CONST);
-        }
-    }
-    
-    
-    // MARK: learn::hillClimber
-    //rob = *learn::hillClimber(20);
-    
-    std::thread thrd = std::thread(runSim, &rob);
-//    thrd.join();
-//    return 0;
-    
-    
     
     
     int frameNum = 0;
@@ -361,7 +350,7 @@ int main()
     // ------------------------------------------------------------------
     glfwTerminate();
     rob.stopSim = true;
-    thrd.join();
+    //thrd.join();
     return 0;
 }
 

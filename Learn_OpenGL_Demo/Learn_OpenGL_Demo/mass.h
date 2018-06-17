@@ -21,6 +21,7 @@
 #include <unordered_set>
 #include <random>
 #include <string>
+#include <iostream>
 
 const float MASS_WEIGHT = 0.2;
 
@@ -43,9 +44,24 @@ public:
         return &pos;
     }
     
-    std::string str(){
-        return std::to_string(m)+"|"+std::to_string(pos[0])+","+std::to_string(pos[1])+","+std::to_string(pos[2]);
+    friend std::ostream &operator<<(std::ostream &os, Mass &m) {
+        os<<m.m<<"|"<<m.pos[0]<<","<<m.pos[1]<<","<<m.pos[2]<<"|";
+        bool firstString = false;
+        for (Spring *s : m.springs){
+            if (firstString)
+                os << ",";
+            os << s;
+            firstString = true;
+        }
+        return os;
     }
+    
+//    std::string str(){
+//        std::string output = std::to_string(m)+"|"+std::to_string(pos[0])+","+std::to_string(pos[1])+","+std::to_string(pos[2])+"|";
+//        for (Spring *s : springs)
+//            output += (std::to_string(s) + ",");
+//        return output.substr(0,string::length(output)-1);
+//    }
     
     Mass (const Mass &old_mass){
         m = old_mass.m;

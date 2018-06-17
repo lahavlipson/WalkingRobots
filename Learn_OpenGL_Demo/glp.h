@@ -1,4 +1,5 @@
-#pragma once
+#ifndef glp_h
+#define glp_h
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -572,3 +573,5 @@ std::vector<double> glp::box(glm::dvec3 dimensions, glm::dvec3 pos) {
     
     return vertices;
 }
+
+#endif

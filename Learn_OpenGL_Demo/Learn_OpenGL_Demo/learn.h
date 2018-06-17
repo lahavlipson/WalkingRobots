@@ -12,6 +12,7 @@
 #include "spring.h"
 #include "robot.h"
 #include <tuple>
+#include "omp.h"
 
 
 
@@ -38,6 +39,36 @@ namespace learn {
         }
         return rob;
     }
+    
+    Robot *getCube(){
+        std::mutex mtx;           // mutex for critical section
+        std::unique_lock<std::mutex> lck (mtx,std::defer_lock);
+        Robot *rob = new Robot(&mtx, 2.0f);
+        
+        std::vector<Mass *> masses;
+        const float ROD_LENGTH = 1.5;
+        masses.push_back(new Mass(glm::vec3(0,0,0),MASS_WEIGHT));
+        masses.push_back(new Mass(glm::vec3(ROD_LENGTH,0,0),MASS_WEIGHT));
+        masses.push_back(new Mass(glm::vec3(0,ROD_LENGTH,0),MASS_WEIGHT));
+        masses.push_back(new Mass(glm::vec3(ROD_LENGTH,ROD_LENGTH,0),MASS_WEIGHT));
+        masses.push_back(new Mass(glm::vec3(0,0,-ROD_LENGTH),MASS_WEIGHT));
+        masses.push_back(new Mass(glm::vec3(ROD_LENGTH,0,-ROD_LENGTH),MASS_WEIGHT));
+        masses.push_back(new Mass(glm::vec3(0,ROD_LENGTH,-ROD_LENGTH),MASS_WEIGHT));
+        masses.push_back(new Mass(glm::vec3(ROD_LENGTH,ROD_LENGTH,-ROD_LENGTH),MASS_WEIGHT));
+        
+        for (Mass *m : masses)
+            rob->addMass(m);
+        
+        for (int i=0; i<masses.size(); i++){
+            for (int j=i+1; j<masses.size(); j++){
+                //Spring *spr = new Spring(masses[i]->mp(),masses[j]->mp(),8);
+                rob->addSpring(masses[i],masses[j],SPRING_CONST);
+            }
+        }
+        
+        return rob;
+        
+    }
 
 
 Robot *hillClimber(int generations){
@@ -51,28 +82,41 @@ Robot *hillClimber(int generations){
         
         std::cout << "gen: " << numgens << std::endl;
         
-        std::vector<std::tuple<Robot,float>> scores;
+        std::vector<float> scores;
+        std::vector<Robot> scoredBots;
+        
+         assert(scoredBots.size()==0);
+        const int NUMBER_CORES_ESTIMATE = 4;
+        for (int i=0;i<NUMBER_CORES_ESTIMATE;i++){
+            Robot r;
+            scoredBots.push_back(r);
+            scores.push_back(-1.0f);
+        }
         
         #pragma omp parallel
         {
-            Robot mutatedBot = bestSoFar;
-            if (rand()%2 == 0)
-                mutatedBot.mutateMasses();
-            else
-                mutatedBot.mutateSprings();
-            const Robot mutatedBotConst = mutatedBot;
             
-            float distance = mutatedBot.simulate(0,20);
-            
-            std::tuple<Robot,float> resultTup = std::make_tuple(mutatedBotConst,distance);
-            scores.push_back(resultTup);
+            #pragma omp for
+            for (int i=0;i<omp_get_num_threads();i++){
+                Robot mutatedBot = bestSoFar;
+                if (i%2 == 0)
+                    mutatedBot.mutateMasses();
+                else
+                    mutatedBot.mutateSprings();
+                const Robot mutatedBotConst = mutatedBot;
+                
+                float distance = mutatedBot.simulate(0,20);
+                
+                assert(scores.size() > i);
+                scores[i] = distance;
+                scoredBots[i] = mutatedBotConst;
+            }
             
         }
-        assert(scores.size() == 4);
-        
-        for (auto tup : scores){
-            float distance = std::get<1>(tup);
-            const Robot mutatedBotConst = std::get<0>(tup);
+
+        for (int i=0;i<scores.size();i++){
+            float distance = scores[i];
+            const Robot mutatedBotConst = scoredBots[i];
             mutatedBotConst.canDeRefMasses();//sanity check
             if (distance > bestDist){
                 bestDist = distance;

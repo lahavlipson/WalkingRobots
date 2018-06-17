@@ -68,7 +68,7 @@ public:
     
     void mutateMasses(){
         Mass *m = new Mass(getPointToSpawnMass(), MASS_WEIGHT);
-        attachMass(3, m);
+        attachMass(4, m);
     }
     
     void mutateSprings(){

@@ -28,6 +28,7 @@
 #include <unordered_set>
 #include <random>
 #include <iostream>
+#include "helper.h"
 
 const float GRAVITY = -9.81;
 const float GROUND_LEVEL = 0.0;
@@ -50,12 +51,14 @@ public:
     
     Robot(std::mutex *mutex, float freq):mtx(mutex),frequency(freq){}
     
-    Robot(){} //breaks things :(
+    Robot(const std::string encoding);
+    
+    Robot(){}
     
     Robot& operator=(const Robot& old_robot);
     
     Robot (const Robot &old_robot){
-        *this = old_robot;
+        *this = old_robot; 
     }
     
     glm::vec3 calcCentroid();
@@ -96,6 +99,8 @@ public:
         for (int i=0; i<springs.size(); i++)
             delete springs[i];
     }
+    
+    friend std::ostream &operator<<(std::ostream &os, Robot &rob);
     
 };
 

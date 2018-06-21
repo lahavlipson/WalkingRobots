@@ -22,7 +22,6 @@
 
 #include "learn.h"
 
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -60,19 +59,23 @@ int main()
     srand(time(0));
     rand();
     
-    Robot cube = *learn::getCube();
     
+    
+    //rob = learn::getCube();
+    rob = learn::synethsize(25);
     
     std::ostringstream stream;
-    for (Spring *s : cube.getSprings())
-        stream << *s << std::endl;
-    std::string str =  stream.str();
-    const char* chr = str.c_str();
-    std::cout << chr << std::endl;
-    
+//    for (Spring *s : cube.getSprings())
+//        stream << *s << std::endl;
+//    stream << cube;
+//    std::string str =  stream.str();
+//    const char* chr = str.c_str();
+//    std::cout << chr << std::endl;
+//    Robot testRob(chr);
+  // rob = learn::poolClimber(15);
     
     // MARK: learn::hillClimber
-    rob = *learn::hillClimber(20);
+    //rob = learn::hillClimber(20);
     //rob = *learn::getCube();
     
     std::thread thrd = std::thread(runSim, &rob);

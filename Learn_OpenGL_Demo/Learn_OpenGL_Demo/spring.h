@@ -31,7 +31,7 @@ class Spring {
 private:
     float l_0;
     
-    float calcRestLength(float t){
+    inline float calcRestLength(float t){
         //std::cout << t << std::endl;
         
         return l_0 + a*sinf(w*t + b);
@@ -62,17 +62,15 @@ public:
         //Pointers will be null;
     }
     
-    double calcLength(){
+    inline double calcLength(){
         return glm::length(*p2-*p1);
     }
     
-    float calcForce(float t = -1){
-        float v = -k*float(calcLength() - calcRestLength(t));
-        const float maxStrength = 400;//70000 happens during snaps often
-        return v;
+    inline float calcForce(float t){
+        return -k*float(calcLength() - calcRestLength(t));
     }
     
-    glm::vec3 getVectorPointingToMass(glm::vec3 *pos_ptr){
+    inline glm::vec3 getVectorPointingToMass(glm::vec3 *pos_ptr){
         assert(p1 != NULL && p2 != NULL);
         glm::vec3 v = glm::normalize(*p1-*p2);
         if (pos_ptr == p1)

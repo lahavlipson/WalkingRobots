@@ -44,6 +44,7 @@ public:
         return &pos;
     }
     
+    //weight,pos[],springs
     friend std::ostream &operator<<(std::ostream &os, Mass &m) {
         os<<m.m<<"|"<<m.pos[0]<<","<<m.pos[1]<<","<<m.pos[2]<<"|";
         bool firstString = false;

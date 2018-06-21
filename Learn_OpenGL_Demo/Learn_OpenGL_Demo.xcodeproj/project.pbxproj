@@ -49,6 +49,7 @@
 		CD6C2B7420C622D30033D186 /* robot.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = robot.cpp; sourceTree = "<group>"; };
 		CD6C2B7520C622D30033D186 /* robot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = robot.h; sourceTree = "<group>"; };
 		CD6C2B8A20C7D75D0033D186 /* glp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glp.h; sourceTree = SOURCE_ROOT; };
+		CDEEBC8120D64E6E004797C4 /* helper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = helper.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +91,7 @@
 				CD3979D220C0450F004A30AD /* main.cpp */,
 				CD6C2B7420C622D30033D186 /* robot.cpp */,
 				CD6C2B7520C622D30033D186 /* robot.h */,
+				CDEEBC8120D64E6E004797C4 /* helper.h */,
 				CD2CE19120CFBA5800258630 /* learn.h */,
 				CD6C2B6F20C503920033D186 /* mass.h */,
 				CD6C2B7220C509440033D186 /* spring.h */,

@@ -14,9 +14,42 @@
 #include <math.h>
 #include <cmath>
 #include <stdio.h>
+#include <sstream>
 
 float getRandFloat(){
     return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+}
+
+// MARK: Robot(encoding)
+
+Robot::Robot(const std::string encoding){
+    std::vector<std::string> objects = helper::split(encoding, "$");
+    const int numMasses = stoi(objects[0]);
+    const int numSprings = stoi(objects[1]);
+    assert(objects.size() == 3+numMasses+numSprings);
+    
+    for (int i=2;i<2+numMasses;i++){
+        std::string massEncoding = objects[i];
+        std::vector<std::string> massVec = helper::split(massEncoding, "|");
+        assert(massVec.size()==3);
+        const float weight = stof(massVec[0]);
+        std::vector<std::string> posVec = helper::split(massVec[1], ",");
+        assert(posVec.size()==3);
+        const glm::vec3 pos(stof(posVec[0]),stof(posVec[1]),stof(posVec[2]));
+        
+    }
+    
+    //NEED TO FINISH
+    
+}
+
+std::ostream &operator<<(std::ostream &os, Robot &rob){
+    os << rob.masses.size() << "$" << rob.springsMap.size() << "$";
+    for (Mass *m : rob.masses)
+        os << *m << "$";
+    for (Spring *s : rob.getSprings())
+        os << *s << "$";
+    return os;
 }
 
 glm::vec3 Robot::getPointToSpawnMass(){
@@ -96,6 +129,7 @@ void Robot::addMass(Mass *m){
     masses.insert(m);
 }
 
+//MARK: - Spring Params
 void Robot::addSpring(Mass *m1, Mass *m2, float constant){
     static float phase = 0;
     const float amplitude = 0.2;
@@ -122,7 +156,7 @@ std::vector<Spring *> Robot::getSprings(){
     }
     return output;
 }
-
+// MARK: operator=
 Robot& Robot::operator=(const Robot& old_robot){
 //    std::cout << "Copied!\n";
     springsMap.clear();
@@ -182,6 +216,8 @@ float Robot::simulate(int uwait, int cycles){//std::vector<double> &rodBufferDat
             force = force - ms->v*DRAG*(std::pow(glm::length(ms->v),1.0f)); //add a force that is prop to v^2 and the direction of the force is opposite the direction of velocity
             for (Spring *spr : ms->springs){
                 glm::vec3 springForce = (spr->getVectorPointingToMass(&(ms->pos)))*(spr->calcForce(t));
+//                if (glm::length(springForce) > 100.0f)
+//                    springForce = glm::normalize(springForce)*100.0f;
                 force = force + springForce;
             }
             if (ms->pos[1] < GROUND_LEVEL){
@@ -201,9 +237,10 @@ float Robot::simulate(int uwait, int cycles){//std::vector<double> &rodBufferDat
             
             ms->v = ms->v + acceleration*(dt);
             
-//            std::cout << (glm::length(ms->v)) << std::endl;
-//            if (glm::length(ms->v) > 5)
-//                ms->v = glm::normalize(ms->v)*5.0f;
+            //keep this in!!! just removed temporarily
+//            const float MAX_SPEED = 3;
+//            if (glm::length(ms->v) > MAX_SPEED)
+//                ms->v = glm::normalize(ms->v)*MAX_SPEED;
         }
         for (Mass *ms : masses){
            // lck.lock();

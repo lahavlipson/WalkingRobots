@@ -16,68 +16,18 @@
 #include <algorithm>
 #include <vector>
 #include "helper.h"
-
+#include "neural_network.h"
+#include "starting_models.h"
 
 namespace learn {
     
-    
-    Robot getTetrahedron(){
-        std::mutex mtx;           // mutex for critical section
-        std::unique_lock<std::mutex> lck (mtx,std::defer_lock);
-        Robot rob(&mtx, 2.0f);
-        
-        std::vector<Mass *> masses;
-        masses.push_back(new Mass(glm::vec3(0,0,0),MASS_WEIGHT));
-        masses.push_back(new Mass(glm::vec3(2,0,0),MASS_WEIGHT));
-        masses.push_back(new Mass(glm::vec3(1,0,-2),MASS_WEIGHT));
-        masses.push_back(new Mass(glm::vec3(1,1,-0.8),MASS_WEIGHT));
-        for (Mass *m : masses)
-            rob.addMass(m);
-        
-        for (int i=0; i<masses.size(); i++){
-            for (int j=i+1; j<masses.size(); j++){
-                rob.addSpring(masses[i],masses[j],SPRING_CONST);
-            }
-        }
-        return rob;
-    }
-    
-    Robot getCube(){
-        std::mutex mtx;           // mutex for critical section
-        std::unique_lock<std::mutex> lck (mtx,std::defer_lock);
-        Robot rob(&mtx, 2.0f);
-        
-        std::vector<Mass *> masses;
-        const float ROD_LENGTH = 1.5;
-        masses.push_back(new Mass(glm::vec3(0,0,0),MASS_WEIGHT));
-        masses.push_back(new Mass(glm::vec3(ROD_LENGTH,0,0),MASS_WEIGHT));
-        masses.push_back(new Mass(glm::vec3(0,ROD_LENGTH,0),MASS_WEIGHT));
-        masses.push_back(new Mass(glm::vec3(ROD_LENGTH,ROD_LENGTH,0),MASS_WEIGHT));
-        masses.push_back(new Mass(glm::vec3(0,0,-ROD_LENGTH),MASS_WEIGHT));
-        masses.push_back(new Mass(glm::vec3(ROD_LENGTH,0,-ROD_LENGTH),MASS_WEIGHT));
-        masses.push_back(new Mass(glm::vec3(0,ROD_LENGTH,-ROD_LENGTH),MASS_WEIGHT));
-        masses.push_back(new Mass(glm::vec3(ROD_LENGTH,ROD_LENGTH,-ROD_LENGTH),MASS_WEIGHT));
-        
-        for (Mass *m : masses)
-            rob.addMass(m);
-        
-        for (int i=0; i<masses.size(); i++){
-            for (int j=i+1; j<masses.size(); j++){
-                //Spring *spr = new Spring(masses[i]->mp(),masses[j]->mp(),8);
-                rob.addSpring(masses[i],masses[j],SPRING_CONST);
-            }
-        }
-        
-        return rob;
-        
-    }
+NeuralNetwork evolveNeuralNetwork(int generations);
 
-
-Robot hillClimber(int generations){
+inline Robot hillClimber(int generations){
     
     int numgens = 0;
     
-    Robot bestSoFar = getTetrahedron();
+    Robot bestSoFar = starting_models::getTetrahedron();
 
     float bestDist = -1;
     while (numgens < generations) {
@@ -135,12 +85,12 @@ Robot hillClimber(int generations){
     return bestSoFar;
 }
     
-    Robot poolClimber(int generations){
+    inline Robot poolClimber(int generations){
         const int POOL_SIZE = 32;
         std::vector<std::tuple<Robot,float>> population;
         
         //initialize population (all tetrahedrons)
-        Robot tetra = getTetrahedron();
+        Robot tetra = starting_models::getTetrahedron();
         const Robot constTetra = tetra;
         const float tetraScore = tetra.simulate(0,8);
         int r=6;
@@ -199,12 +149,14 @@ Robot hillClimber(int generations){
         
     }
     
-    Mass *getNextPoint(Mass *m1, Mass *m2, Mass *m3){
-        return helper::getCenterVec(m1,m2,m3);
+    
+    
+    inline Mass *getNextPoint(Mass *m1, Mass *m2, Mass *m3){
+        return helper::getCenterVec(m1, m2, m3);
     }
     
-    Robot synethsize(int numMassesAdded){
-        Robot rob = getTetrahedron();
+    inline Robot synethsize(int numMassesAdded){
+        Robot rob = starting_models::getTetrahedron();
         std::vector<Mass *> masses;
         for (Mass *m : rob.masses)
             masses.push_back(m);
@@ -220,6 +172,7 @@ Robot hillClimber(int generations){
         
         return rob;
     }
+     
 
 }
 

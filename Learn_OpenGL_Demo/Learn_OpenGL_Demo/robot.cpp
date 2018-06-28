@@ -132,7 +132,7 @@ void Robot::addMass(Mass *m){
 //MARK: - Spring Params
 void Robot::addSpring(Mass *m1, Mass *m2, float constant){
     static float phase = 0;
-    const float amplitude = 0.2;
+    const float amplitude = 0.00;
     Spring *s = new Spring(m1->mp(),m2->mp(),constant,amplitude,phase,frequency);
     phase += 0.22;
     springsMap.insert({s,std::make_tuple(m1,m2)});

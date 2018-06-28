@@ -21,6 +21,8 @@
 #include <sstream>
 
 #include "learn.h"
+#include "neural_network.h"
+#include "starting_models.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -46,7 +48,7 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // lighting
-glm::vec3 lightPos(6.2f, 4.0f, 5.0f);
+glm::vec3 lightPos(6.2f, 7.0f, 5.0f);
 
 void runSim(Robot *rob){
     rob->simulate(500,1000);
@@ -59,10 +61,12 @@ int main()
     srand(time(0));
     rand();
     
-    
-    
     //rob = learn::getCube();
-    rob = learn::synethsize(25);
+    rob = starting_models::getTetroid();//starting_models::getCuboid(3,4,2);//learn::synethsize(25);
+    
+    assert(rob.getSprings().size() > 0);
+    NeuralNetwork nn(rob, 3, 7);
+   // std::cout << nn;
     
     std::ostringstream stream;
 //    for (Spring *s : cube.getSprings())

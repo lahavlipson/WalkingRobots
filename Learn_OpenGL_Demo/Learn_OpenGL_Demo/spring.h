@@ -22,6 +22,8 @@
 
 const float SPRING_CONST = 8000.0;
 
+const float ROD_LENGTH = 1.5;
+
 //void pv3(glm::vec3 v){
 //    std::cout << "(" << v[0] << ", " << v[0] << ", " << v[0] << ")\n";
 //}
@@ -60,6 +62,10 @@ public:
         w = old_spring.w;
         l_0 = old_spring.l_0;
         //Pointers will be null;
+    }
+    
+    inline glm::vec3 calcCenter(){
+        return (*p1 + *p2)*0.5f;
     }
     
     inline double calcLength(){

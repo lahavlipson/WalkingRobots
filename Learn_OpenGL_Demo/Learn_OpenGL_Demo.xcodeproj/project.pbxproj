@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CD36924720E3740F00CE09F8 /* learn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36924620E3740F00CE09F8 /* learn.cpp */; };
 		CD3979D320C0450F004A30AD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD3979D220C0450F004A30AD /* main.cpp */; };
 		CD3979DA20C05096004A30AD /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = CD3979D920C05096004A30AD /* glad.c */; };
 		CD3979DD20C05ED5004A30AD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3979DC20C05ED5004A30AD /* Cocoa.framework */; };
@@ -15,7 +16,9 @@
 		CD3979E320C05F2D004A30AD /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3979E220C05F2D004A30AD /* CoreVideo.framework */; };
 		CD3979ED20C0C027004A30AD /* stb_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD3979EB20C0C027004A30AD /* stb_image.cpp */; };
 		CD39ACFB20D396F9004F6EE0 /* libiomp5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CD39ACFA20D396F9004F6EE0 /* libiomp5.dylib */; };
+		CD5A9EF120DB6DD8001096CF /* neural_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5A9EEF20DB6DD8001096CF /* neural_network.cpp */; };
 		CD6C2B7620C622D30033D186 /* robot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD6C2B7420C622D30033D186 /* robot.cpp */; };
+		CDD35D8F20DEE2080031111F /* starting_models.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD35D8D20DEE2080031111F /* starting_models.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +35,7 @@
 
 /* Begin PBXFileReference section */
 		CD2CE19120CFBA5800258630 /* learn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = learn.h; sourceTree = "<group>"; };
+		CD36924620E3740F00CE09F8 /* learn.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = learn.cpp; sourceTree = "<group>"; };
 		CD3979CF20C0450F004A30AD /* Learn_OpenGL_Demo */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Learn_OpenGL_Demo; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD3979D220C0450F004A30AD /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		CD3979D920C05096004A30AD /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = glad.c; path = ../../../../Downloads/glad/src/glad.c; sourceTree = "<group>"; };
@@ -43,12 +47,16 @@
 		CD3979EB20C0C027004A30AD /* stb_image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = stb_image.cpp; sourceTree = "<group>"; };
 		CD3979EC20C0C027004A30AD /* stb_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
 		CD39ACFA20D396F9004F6EE0 /* libiomp5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiomp5.dylib; path = ../../../../../usr/local/Cellar/llvm/6.0.0/lib/libiomp5.dylib; sourceTree = "<group>"; };
+		CD5A9EEF20DB6DD8001096CF /* neural_network.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = neural_network.cpp; sourceTree = "<group>"; };
+		CD5A9EF020DB6DD8001096CF /* neural_network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = neural_network.h; sourceTree = "<group>"; };
 		CD6C2B6920C235490033D186 /* camera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = camera.h; sourceTree = "<group>"; };
 		CD6C2B6F20C503920033D186 /* mass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mass.h; sourceTree = "<group>"; };
 		CD6C2B7220C509440033D186 /* spring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spring.h; sourceTree = "<group>"; };
 		CD6C2B7420C622D30033D186 /* robot.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = robot.cpp; sourceTree = "<group>"; };
 		CD6C2B7520C622D30033D186 /* robot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = robot.h; sourceTree = "<group>"; };
 		CD6C2B8A20C7D75D0033D186 /* glp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glp.h; sourceTree = SOURCE_ROOT; };
+		CDD35D8D20DEE2080031111F /* starting_models.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = starting_models.cpp; sourceTree = "<group>"; };
+		CDD35D8E20DEE2080031111F /* starting_models.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = starting_models.h; sourceTree = "<group>"; };
 		CDEEBC8120D64E6E004797C4 /* helper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = helper.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,10 +97,15 @@
 			isa = PBXGroup;
 			children = (
 				CD3979D220C0450F004A30AD /* main.cpp */,
+				CDD35D8D20DEE2080031111F /* starting_models.cpp */,
+				CDD35D8E20DEE2080031111F /* starting_models.h */,
 				CD6C2B7420C622D30033D186 /* robot.cpp */,
 				CD6C2B7520C622D30033D186 /* robot.h */,
 				CDEEBC8120D64E6E004797C4 /* helper.h */,
 				CD2CE19120CFBA5800258630 /* learn.h */,
+				CD36924620E3740F00CE09F8 /* learn.cpp */,
+				CD5A9EEF20DB6DD8001096CF /* neural_network.cpp */,
+				CD5A9EF020DB6DD8001096CF /* neural_network.h */,
 				CD6C2B6F20C503920033D186 /* mass.h */,
 				CD6C2B7220C509440033D186 /* spring.h */,
 				CD6C2B6920C235490033D186 /* camera.h */,
@@ -173,8 +186,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD36924720E3740F00CE09F8 /* learn.cpp in Sources */,
+				CD5A9EF120DB6DD8001096CF /* neural_network.cpp in Sources */,
 				CD6C2B7620C622D30033D186 /* robot.cpp in Sources */,
 				CD3979ED20C0C027004A30AD /* stb_image.cpp in Sources */,
+				CDD35D8F20DEE2080031111F /* starting_models.cpp in Sources */,
 				CD3979D320C0450F004A30AD /* main.cpp in Sources */,
 				CD3979DA20C05096004A30AD /* glad.c in Sources */,
 			);

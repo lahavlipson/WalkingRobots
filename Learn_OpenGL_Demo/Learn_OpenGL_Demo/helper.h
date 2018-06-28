@@ -18,6 +18,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <string>
 
 namespace helper {
         inline std::vector<std::string> split(std::string s, std::string delimiter){
@@ -41,6 +42,16 @@ namespace helper {
         const glm::vec3 centroid = ((m1->pos)+(m2->pos)+(m3->pos))*0.333f;
         return new Mass(centroid + normalVec, MASS_WEIGHT);
 
+    }
+    
+    inline std::string vecToStr(std::vector<float> vec){
+        std::string output = "";
+        for (int i=0; i<vec.size(); i++) {
+            if (i > 0)
+                output += ", ";
+            output += std::to_string(vec[i]);
+        }
+        return output;
     }
     
 }

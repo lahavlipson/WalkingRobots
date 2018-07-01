@@ -21,7 +21,7 @@
 
 namespace learn {
     
-NeuralNetwork evolveNeuralNetwork(int generations);
+Robot evolveNeuralNetwork(int generations);
 
 inline Robot hillClimber(int generations){
     

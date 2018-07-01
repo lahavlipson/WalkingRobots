@@ -58,14 +58,19 @@ int renderRob();
 
 int main()
 {
+    
     srand(time(0));
     rand();
     
-    //rob = learn::getCube();
-    rob = starting_models::getTetroid();//starting_models::getCuboid(3,4,2);//learn::synethsize(25);
+    rob = learn::evolveNeuralNetwork(100);
+    //std::vector<Spring *> springVec;
+   // return 1;
     
-    assert(rob.getSprings().size() > 0);
-    NeuralNetwork nn(rob, 3, 7);
+    //rob = learn::getCube();
+   // rob = starting_models::getTetroid();//starting_models::getCuboid(3,4,2);//learn::synethsize(25);
+    
+//    assert(rob.getSprings().size() > 0);
+//    NeuralNetwork nn(rob, 3, 7);
    // std::cout << nn;
     
     std::ostringstream stream;

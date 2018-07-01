@@ -11,7 +11,7 @@
 
 #include "mass.h"
 #include "spring.h"
-#include "robot.h"
+//#include "robot.h"
 #include <tuple>
 #include "omp.h"
 #include <algorithm>
@@ -19,6 +19,24 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
+#include <iterator>
+
+#define PRINT(x) std::cout << #x" is " << x << std::endl
+#define PRINT_I(x) printf(#x" is %d\n",x)
+#define PRINT_F(x) printf(#x" is %f\n",x)
+
+#ifndef NDEBUG
+#   define ASSERT(condition, message) \
+do { \
+if (! (condition)) { \
+std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
+<< " line " << __LINE__ << ": " << message << std::endl; \
+std::terminate(); \
+} \
+} while (false)
+#else
+#   define ASSERT(condition, message) do { } while (false)
+#endif
 
 namespace helper {
         inline std::vector<std::string> split(std::string s, std::string delimiter){
@@ -52,6 +70,22 @@ namespace helper {
             output += std::to_string(vec[i]);
         }
         return output;
+    }
+    
+    inline int myrand(int n, int exclude = -1){
+        ASSERT(n>0 && n<1000,"n is " << n);
+        std::random_device rd;  //Will be used to obtain a seed for the random number engine
+        std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+        std::uniform_int_distribution<> dis(0, n-1);
+        int output;
+        do {
+            output = dis(gen);
+        } while (output == exclude);
+        return output;
+    }
+    
+    inline float myrandFloat(){
+        return float(myrand(1000000))/1000000.0f;
     }
     
 }

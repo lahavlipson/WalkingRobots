@@ -133,7 +133,7 @@ Robot starting_models::getTetroid(){
     
     
     std::vector<std::string> massPairs;
-    
+    std::vector<Spring *> springList;
     for (Mass *m1: rob.masses){
         for (Mass *m2: rob.masses){
             std::stringstream ss1;
@@ -143,14 +143,17 @@ Robot starting_models::getTetroid(){
             ss2 << m2 << m1;
             const bool ss2Exists = std::find(massPairs.begin(), massPairs.end(), ss2.str()) != massPairs.end();
             if (m1 != m2 && !ss1Exists && !ss2Exists && glm::distance(m2->pos,m1->pos) <= 1.8f){
-                rob.addSpring(m1,m2,SPRING_CONST);
+                Spring *s = rob.addSpring(m1,m2,SPRING_CONST);
+                springList.push_back(s);
                 massPairs.push_back(ss1.str());
                 massPairs.push_back(ss2.str());
             }
         }
     }
     
+    assert(springList.size() > 1);
     
+    rob.setSpringVec(springList);
     
     return rob;
 }

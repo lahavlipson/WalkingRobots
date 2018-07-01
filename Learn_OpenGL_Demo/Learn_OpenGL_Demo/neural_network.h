@@ -10,13 +10,18 @@
 #define neural_network_h
 
 #include <stdio.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Eigen/Dense"
 #include <iostream>
 #include <vector>
 #include <math.h>
-#include "robot.h"
-//#include <random>
+#include <random>
 #include <cmath>
+#include "spring.h"
+#include "helper.h"
 
 namespace nn_helper {
     
@@ -31,16 +36,18 @@ namespace nn_helper {
 
 class NeuralNetwork {
 
-private:
+public://make this private later
     
     std::vector<Eigen::MatrixXd> weights;
     std::vector<std::vector<glm::vec3>> layers;
     
-    Robot *rob_ptr = NULL;
+    std::vector<glm::vec3> springPosVec;
+    glm::vec3 springStartingPos;
+    int hiddenDimension;
     
 public:
     
-    NeuralNetwork(Robot &rob, int numHidden, int dimHidden);
+    NeuralNetwork(std::vector<glm::vec3> springPos, glm::vec3 startingPos, int numHidden, int dimHidden);
     
     NeuralNetwork (const NeuralNetwork &old_nn){
         *this = old_nn;
@@ -50,7 +57,7 @@ public:
     
     void calculateNeuronPositions();
     
-    std::vector<float> evaluate(std::vector<float> input);
+    void evaluate(std::vector<Spring *> input);
     
     NeuralNetwork crossOver(NeuralNetwork &nn);
     

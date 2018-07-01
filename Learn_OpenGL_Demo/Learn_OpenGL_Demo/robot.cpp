@@ -16,10 +16,6 @@
 #include <stdio.h>
 #include <sstream>
 
-float getRandFloat(){
-    return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-}
-
 // MARK: Robot(encoding)
 
 Robot::Robot(const std::string encoding){
@@ -65,9 +61,9 @@ glm::vec3 Robot::getPointToSpawnMass(){
     glm::vec3 randomLoc;
     float closestDist;
     do {
-        glm::vec3 randUnitVec(getRandFloat()-0.5f,getRandFloat()-0.5f,getRandFloat()-0.5f);
+        glm::vec3 randUnitVec(helper::myrandFloat()-0.5f,helper::myrandFloat()-0.5f,helper::myrandFloat()-0.5f);
         randUnitVec = glm::normalize(randUnitVec);
-        float randDistance = getRandFloat()*MaxRadius;
+        float randDistance = helper::myrandFloat()*MaxRadius;
         randomLoc = centroid + randUnitVec*randDistance;
         
         closestDist = FLT_MAX;
@@ -130,14 +126,15 @@ void Robot::addMass(Mass *m){
 }
 
 //MARK: - Spring Params
-void Robot::addSpring(Mass *m1, Mass *m2, float constant){
+Spring *Robot::addSpring(Mass *m1, Mass *m2, float constant){
     static float phase = 0;
-    const float amplitude = 0.00;
-    Spring *s = new Spring(m1->mp(),m2->mp(),constant,amplitude,phase,frequency);
+    const float amplitude = 0.05;
+    Spring *s = new Spring(m1->mp(),m2->mp(),constant,0,0,0);
     phase += 0.22;
     springsMap.insert({s,std::make_tuple(m1,m2)});
     m1->springs.insert(s);
     m2->springs.insert(s);
+    return s;
 }
 
 glm::vec3 Robot::calcCentroid(){
@@ -163,6 +160,7 @@ Robot& Robot::operator=(const Robot& old_robot){
     masses.clear();
     frequency = old_robot.frequency;
     mtx = old_robot.mtx;
+    network = old_robot.network;
     std::unordered_map<Spring *,Spring *> oldSpringToNew;
     std::unordered_map<Mass *,Mass *> oldMassToNew;
     for (Mass *m : old_robot.masses){
@@ -172,6 +170,14 @@ Robot& Robot::operator=(const Robot& old_robot){
         Spring *s = it->first;
         oldSpringToNew.insert({s,new Spring(*s)});
     }
+    
+    //orderedListOfSprings = old_robot.orderedListOfSprings;
+    orderedListOfSprings.clear();
+    for (int i=0; i<old_robot.orderedListOfSprings.size(); i++){
+        Spring *old_spring = old_robot.orderedListOfSprings[i];
+        orderedListOfSprings.push_back(oldSpringToNew[old_spring]);
+    }
+    
     
     for (Mass *m : old_robot.masses){
         Mass *newMass = oldMassToNew[m];
@@ -192,10 +198,10 @@ Robot& Robot::operator=(const Robot& old_robot){
     return *this;
 }
 
-float Robot::simulate(int uwait, int cycles){//std::vector<double> &rodBufferData){
+float Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData){
     //simulate and update all the masses and springs.
     //Then update the rodBufferData for all the springs
-    std::unique_lock<std::mutex> lck (*mtx,std::defer_lock);
+    //std::unique_lock<std::mutex> lck (*mtx,std::defer_lock);
     assert(!wasSimulated);
     wasSimulated = true;
     
@@ -203,10 +209,11 @@ float Robot::simulate(int uwait, int cycles){//std::vector<double> &rodBufferDat
     
     const float dt=0.001;
     float t = 0;
-    while (!stopSim && t < (M_PI*float(2*cycles)/frequency)) {
+    while (!stopSim && t < time){//(M_PI*float(2*cycles)/frequency)) {
         if (uwait > 0)
             usleep(uwait);//1000 is normal
         
+        updateSprings();
         
         for (Mass *ms : masses){
             glm::vec3 force;
@@ -238,9 +245,9 @@ float Robot::simulate(int uwait, int cycles){//std::vector<double> &rodBufferDat
             ms->v = ms->v + acceleration*(dt);
             
             //keep this in!!! just removed temporarily
-//            const float MAX_SPEED = 3;
-//            if (glm::length(ms->v) > MAX_SPEED)
-//                ms->v = glm::normalize(ms->v)*MAX_SPEED;
+            const float MAX_SPEED = 3;
+            if (glm::length(ms->v) > MAX_SPEED)
+                ms->v = glm::normalize(ms->v)*MAX_SPEED;
         }
         for (Mass *ms : masses){
            // lck.lock();

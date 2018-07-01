@@ -313,7 +313,8 @@
 			buildSettings = {
 				CC = /usr/local/opt/llvm/bin/clang;
 				CLANG_ENABLE_MODULES = NO;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Manual;
 				COMPILER_INDEX_STORE_ENABLE = NO;
 				DEVELOPMENT_TEAM = SBGX5Q9V65;
 				HEADER_SEARCH_PATHS = (
@@ -333,6 +334,7 @@
 				OTHER_CFLAGS = "-fopenmp";
 				OTHER_LDFLAGS = "-lglfw";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -341,7 +343,8 @@
 			buildSettings = {
 				CC = /usr/local/opt/llvm/bin/clang;
 				CLANG_ENABLE_MODULES = NO;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Manual;
 				COMPILER_INDEX_STORE_ENABLE = NO;
 				DEVELOPMENT_TEAM = SBGX5Q9V65;
 				HEADER_SEARCH_PATHS = (
@@ -361,6 +364,7 @@
 				OTHER_CFLAGS = "-fopenmp";
 				OTHER_LDFLAGS = "-lglfw";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};

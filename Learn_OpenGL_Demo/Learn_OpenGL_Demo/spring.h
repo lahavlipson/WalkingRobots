@@ -31,11 +31,8 @@ const float ROD_LENGTH = 1.5;
 class Spring {
     
 private:
-    float l_0;
     
     inline float calcRestLength(float t){
-        //std::cout << t << std::endl;
-        
         return l_0 + a*sinf(w*t + b);
     }
     
@@ -43,11 +40,12 @@ public:
     glm::vec3 *p1 = NULL;
     glm::vec3 *p2 = NULL;
     float k;
+    float l_0;
     
     //For oscillation
-    float a;
-    float b;//won't change anything rn
-    float w;
+    float a=0;
+    float b=0;//won't change anything rn
+    float w=0;
     
     Spring(glm::vec3 *pos1, glm::vec3 *pos2, float constant, float amplitude, float phase, float frequency):p1(pos1),p2(pos2),k(constant), a(amplitude), b(phase), w(frequency){
         const float currentLength = glm::length(*pos2 - *pos1);
@@ -72,8 +70,8 @@ public:
         return glm::length(*p2-*p1);
     }
     
-    inline float calcForce(float t){
-        return -k*float(calcLength() - calcRestLength(t));
+    inline float calcForce(float t=0){
+        return -k*float(calcLength() - l_0);//calcRestLength(t));
     }
     
     inline glm::vec3 getVectorPointingToMass(glm::vec3 *pos_ptr){

@@ -29,6 +29,7 @@
 #include <random>
 #include <iostream>
 #include "helper.h"
+#include "neural_network.h"
 
 const float GRAVITY = -9.81;
 const float GROUND_LEVEL = 0.0;
@@ -40,6 +41,17 @@ private:
     
     glm::vec3 getPointToSpawnMass();
     
+    //Used for updating weights
+    std::vector<Spring *> orderedListOfSprings;
+    NeuralNetwork *network = NULL;
+    
+    inline void updateSprings(){
+        if (network != NULL && orderedListOfSprings.size() > 0){
+            assert(orderedListOfSprings.size() > 1);
+            network->evaluate(orderedListOfSprings);
+        }
+    }
+    
 public:
     std::unordered_set<Mass *> masses;
     std::mutex *mtx = NULL;
@@ -48,6 +60,14 @@ public:
     bool stopSim = false;
     bool wasSimulated = false;
     float frequency;
+    
+    inline void setNN(NeuralNetwork *nn){
+        network = nn;
+    }
+    
+    inline void setSpringVec(std::vector<Spring *> vec){
+        orderedListOfSprings = vec;
+    }
     
     Robot(std::mutex *mutex, float freq):mtx(mutex),frequency(freq){}
     
@@ -75,7 +95,7 @@ public:
     }
     
     void mutateSprings(){
-        int index = rand()%(springsMap.size());
+        int index = helper::myrand(springsMap.size());
         Spring *s = getSprings()[index];
         float r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/(2*M_PI)));
         s->b = r;
@@ -83,9 +103,9 @@ public:
     
     std::vector<Spring *> getSprings();
     
-    void addSpring(Mass *m1, Mass *m2, float constant);
+    Spring *addSpring(Mass *m1, Mass *m2, float constant);
     
-    float simulate(int uwait, int cycles = 1000000);
+    float simulate(int uwait, int time = 1000000);
     
     void canDeRefMasses() const{
         for (Mass *mp : masses)

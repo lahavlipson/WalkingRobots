@@ -72,6 +72,13 @@ namespace helper {
         return output;
     }
     
+    inline float drawNormal(float mean, float stdDev){
+        std::random_device rd;
+        std::mt19937 e2(rd());
+        std::normal_distribution<> dist(mean, stdDev);
+        return dist(e2);
+    }
+    
     inline int myrand(int n, int exclude = -1){
         ASSERT(n>0 && n<1000,"n is " << n);
         std::random_device rd;  //Will be used to obtain a seed for the random number engine

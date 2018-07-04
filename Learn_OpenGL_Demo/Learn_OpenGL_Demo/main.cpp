@@ -1,12 +1,11 @@
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "shader_s.h"
-#include "glp.h"
+
 #include "camera.h"
 #include "mass.h"
 #include "spring.h"
@@ -24,10 +23,18 @@
 #include "neural_network.h"
 #include "starting_models.h"
 
+#define enable_graphics
+
+#ifdef enable_graphics
+#include <GLFW/glfw3.h>
+#include "glp.h"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
+int renderRob();
+#endif
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -54,48 +61,25 @@ void runSim(Robot *rob){
     rob->simulate(500,1000);
 }
 
-int renderRob();
-
 int main()
 {
     
     srand(time(0));
     rand();
     
-    rob = learn::evolveNeuralNetwork(100);
-    //std::vector<Spring *> springVec;
-   // return 1;
+    rob = learn::evolveNeuralNetwork(0);
     
-    //rob = learn::getCube();
-   // rob = starting_models::getTetroid();//starting_models::getCuboid(3,4,2);//learn::synethsize(25);
-    
-//    assert(rob.getSprings().size() > 0);
-//    NeuralNetwork nn(rob, 3, 7);
-   // std::cout << nn;
-    
-    std::ostringstream stream;
-//    for (Spring *s : cube.getSprings())
-//        stream << *s << std::endl;
-//    stream << cube;
-//    std::string str =  stream.str();
-//    const char* chr = str.c_str();
-//    std::cout << chr << std::endl;
-//    Robot testRob(chr);
-  // rob = learn::poolClimber(15);
-    
-    // MARK: learn::hillClimber
-    //rob = learn::hillClimber(20);
-    //rob = *learn::getCube();
-    
+    #ifdef enable_graphics
     std::thread thrd = std::thread(runSim, &rob);
     renderRob();
-    
-    
     thrd.join();
+    #endif
+    
     return 0;
     
 }
 
+#ifdef enable_graphics
 
 int renderRob(){
     
@@ -453,4 +437,4 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     camera.ProcessMouseScroll(yoffset);
 }
 
-
+#endif

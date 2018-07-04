@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -49,7 +48,8 @@ private:
         if (network != NULL && orderedListOfSprings.size() > 0){
             assert(orderedListOfSprings.size() > 1);
             network->evaluate(orderedListOfSprings);
-        }
+        } else
+            printf("skipping spring updates\n");
     }
     
 public:

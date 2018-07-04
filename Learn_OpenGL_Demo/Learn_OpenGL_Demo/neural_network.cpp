@@ -25,10 +25,8 @@ NeuralNetwork::NeuralNetwork(std::vector<glm::vec3> springPos, glm::vec3 startin
             previousSize = springPosVec.size();
         if (i == weights.size()-1)
             nextSize = springPosVec.size();
-        assert(nextSize == dimHidden || nextSize == 81);
-        assert(previousSize == dimHidden || previousSize == 81);
         assert(nextSize < 1000 && previousSize < 1000);
-        weights[i] = Eigen::MatrixXd::Random(previousSize,nextSize);
+        weights[i] = (Eigen::MatrixXd::Random(previousSize,nextSize))*1.0f;
        // std::cout << weights[0].cols() << " " << i << std::endl;
     }
     
@@ -72,7 +70,7 @@ void NeuralNetwork::calculateNeuronPositions(){
     //Setting positions for layers:
     
     
-    for (int k=0; k<6; k++){//arbitrary number of cycles
+    for (int k=0; k<10; k++){//arbitrary number of cycles
         for (int r=1; r<layers.size()-1; r++){//for each hidden layer
             assert(layers.size() > 2);
             for (int i=0; i<layers[1].size(); i++){//nodes in current row
@@ -93,9 +91,9 @@ void NeuralNetwork::calculateNeuronPositions(){
                     average += layers[r-1][j]*singleWeight;
                     totalWeight += singleWeight;
                 }
-                assert(!isnan(average[0]));
+                assert(!std::isnan(average[0]));
                 average *= 1.0f/totalWeight;
-                assert(!isnan(average[0]));
+                assert(!std::isnan(average[0]));
                 layers[r][i] = average;
             }
         }
@@ -105,7 +103,7 @@ void NeuralNetwork::calculateNeuronPositions(){
     
     
     //PRINTING NODE LOCS
-/*    for (int i=0; i<layers.size(); i++){//layers
+   /* for (int i=0; i<layers.size(); i++){//layers
         for (int j=0; j<layers[i].size(); j++)//nodes
             std::cout<<"("<<layers[i][j][0]<<","<<layers[i][j][1]<<","<<layers[i][j][2]<<")  ";
         std::cout << "\n---------------------------------------------\n";
@@ -121,42 +119,52 @@ void NeuralNetwork::evaluate(std::vector<Spring *> input){
     for (int i=0; i<input.size(); i++)
         data(0,i) = input[i]->calcLength();
     
-    
+    assert(weights.size()>0);
     for (int i=0; i<weights.size(); i++){
         assert(data.cols() == weights[i].rows());
+        
         data *= weights[i];
+        //std::cout << "before actived: " << data << "\n\n";
         if (i < weights.size()-1)
             nn_helper::activate(data);
+        else
+            nn_helper::activate(data,0.9,0.2,5.4f);
+        
+        //std::cout << "activated: " << data << "\n\n";
     }
     
-    for (int i=0; i<input.size(); i++)
-        input[i]->l_0 = data(0,i);
+   // PRINT(data);
+    
+    
+    for (int i=0; i<input.size(); i++){
+        input[i]->l_0 = fminf((input[i]->l_0)*data(0,i),2.5f);
+    }
 }
 
 NeuralNetwork NeuralNetwork::crossOver(NeuralNetwork &nn){
     assert(layers.size()>2);
     NeuralNetwork output = *this;
     
-    const int i = helper::myrand(output.weights.size());
+    const long i = helper::myrand(output.weights.size());
     //std::cout << "THIS IS I: " << i << std::endl;
     assert(output.weights[i].rows() >= 5 && output.weights[i].cols()>=5);
-    const int r1 = (helper::myrand(output.weights[i].rows()-4))+1;
+    const long r1 = (helper::myrand(output.weights[i].rows()-4))+1;
     assert((output.weights[i].rows()-r1-3)>0);
-    const int r2 = (helper::myrand(output.weights[i].rows()-r1-3))+r1+2;
+    const long r2 = (helper::myrand(output.weights[i].rows()-r1-3))+r1+2;
     assert(output.weights[i].cols()>0);
-    const int c1 = (helper::myrand(output.weights[i].cols()-4))+1;
-    const int c2 = (helper::myrand(output.weights[i].cols()-c1-3))+c1+2;
+    const long c1 = (helper::myrand(output.weights[i].cols()-4))+1;
+    const long c2 = (helper::myrand(output.weights[i].cols()-c1-3))+c1+2;
     
     assert(r1>0);
     ASSERT(r2<output.weights[i].rows()-1,"output.weights[i].rows() = " << (output.weights[i].rows()));
     assert(r2-r1 > 1);
     
-    const int r_section = helper::myrand(3);
-    const int c_section = helper::myrand(3);
-    int r_start = 0;
-    int r_end = r1;
-    int c_start = 0;
-    int c_end = c1;
+    const long r_section = helper::myrand(3);
+    const long c_section = helper::myrand(3);
+    long r_start = 0;
+    long r_end = r1;
+    long c_start = 0;
+    long c_end = c1;
     
     if (r_section == 1){
         r_start = r1;
@@ -182,7 +190,7 @@ NeuralNetwork NeuralNetwork::crossOver(NeuralNetwork &nn){
     return output;
 }
 
-NeuralNetwork &NeuralNetwork::mutate(double a){
+NeuralNetwork &NeuralNetwork::mutate(){
     
     const int i = helper::myrand(weights.size());
     const int r = helper::myrand(weights[i].rows());
@@ -195,14 +203,12 @@ NeuralNetwork &NeuralNetwork::mutate(double a){
     glm::vec3 p2 = layers[i+1][c];
     glm::vec3 p1 = layers[i][r];
     const double distance = glm::distance(p2,p1);
-  //  std::cout << "distance: " << distance << std::endl;
     
-    std::default_random_engine generator;
-    std::normal_distribution<double> distribution(0.0,1.0/pow(distance,a));
-    double number = distribution(generator);
-   // std::cout << "LOOKK: " << (1.0/pow(distance,a)) << std::endl;//THINK ABOUT THIS
-   // std::cout << "LOOKK: " << number << std::endl;
-    weights[i](r,c) = float(number);
+    const float height = 1.5f;
+    const float width = 0.5f;
+    const double stdDev = height*exp(pow(distance,2)/(-width));
+    float number = helper::drawNormal(0.0,stdDev);
+    weights[i](r,c) *= number;
     
     return *this;
 }

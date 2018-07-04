@@ -205,7 +205,9 @@ float Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData)
     assert(!wasSimulated);
     wasSimulated = true;
     
-    const glm::vec3 startingPos = calcCentroid();
+    glm::vec3 startingPos;// = calcCentroid();
+    bool alreadySetStartingPos = false;
+    const float TIME_TO_RECORD = 10.0f;
     
     const float dt=0.001;
     float t = 0;
@@ -213,18 +215,25 @@ float Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData)
         if (uwait > 0)
             usleep(uwait);//1000 is normal
         
-        updateSprings();
+        assert(time > TIME_TO_RECORD);
+        if (!alreadySetStartingPos && t > TIME_TO_RECORD){
+            startingPos = calcCentroid();
+            alreadySetStartingPos = true;
+        }
+        
+        static unsigned int updateCounter = 0;
+        if (updateCounter%50 == 0)
+            updateSprings();
+        updateCounter++;
         
         for (Mass *ms : masses){
             glm::vec3 force;
             force[1] = force[1] + ms->m*GRAVITY;
             force = force + pushForce;
             const float DRAG = 0.01; //(0 = no drag)
-            force = force - ms->v*DRAG*(std::pow(glm::length(ms->v),1.0f)); //add a force that is prop to v^2 and the direction of the force is opposite the direction of velocity
+            force = force - ms->v*DRAG*(std::pow(glm::length(ms->v),1.0f));
             for (Spring *spr : ms->springs){
                 glm::vec3 springForce = (spr->getVectorPointingToMass(&(ms->pos)))*(spr->calcForce(t));
-//                if (glm::length(springForce) > 100.0f)
-//                    springForce = glm::normalize(springForce)*100.0f;
                 force = force + springForce;
             }
             if (ms->pos[1] < GROUND_LEVEL){
@@ -245,7 +254,7 @@ float Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData)
             ms->v = ms->v + acceleration*(dt);
             
             //keep this in!!! just removed temporarily
-            const float MAX_SPEED = 3;
+            const float MAX_SPEED = 1;
             if (glm::length(ms->v) > MAX_SPEED)
                 ms->v = glm::normalize(ms->v)*MAX_SPEED;
         }

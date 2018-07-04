@@ -25,6 +25,7 @@ namespace starting_models {
     Robot getTetrahedron();
     Robot getCube();
     Robot getTetroid();
+    Robot getArrow();
 }
 
 #endif /* starting_models_h */

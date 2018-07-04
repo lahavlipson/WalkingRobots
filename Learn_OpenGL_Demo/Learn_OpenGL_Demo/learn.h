@@ -18,10 +18,14 @@
 #include "helper.h"
 #include "neural_network.h"
 #include "starting_models.h"
+#include "vec_writer.h"
+#include <array>
 
 namespace learn {
     
 Robot evolveNeuralNetwork(int generations);
+    
+Robot climbNeuralNetwork(int generations);
 
 inline Robot hillClimber(int generations){
     

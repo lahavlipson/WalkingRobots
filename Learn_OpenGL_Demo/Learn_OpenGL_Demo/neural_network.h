@@ -25,10 +25,10 @@
 
 namespace nn_helper {
     
-    inline Eigen::MatrixXd &activate(Eigen::MatrixXd &vec) {
+    inline Eigen::MatrixXd &activate(Eigen::MatrixXd &vec, float lift = 0.0f, float height = 1.0f, float width = 1.0f) {
         assert(vec.rows() == 1);
         for (int i=0; i<vec.cols(); i++)
-            vec(0,i) = 1/(1+exp(-1*vec(0,i)));
+            vec(0,i) = height/(1.0f+exp(-1.0f*(vec(0,i)/width))) + lift;
         return vec;
     }
     
@@ -61,7 +61,7 @@ public:
     
     NeuralNetwork crossOver(NeuralNetwork &nn);
     
-    NeuralNetwork &mutate(double a);
+    NeuralNetwork &mutate();
     
     friend std::ostream &operator<<(std::ostream &os, NeuralNetwork &nn);
     

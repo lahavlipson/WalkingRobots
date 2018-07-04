@@ -34,6 +34,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CD0109BF20E9C6840086F302 /* vec_writer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = vec_writer.h; path = ../../../../MultithreadDemo/MultithreadDemo/vec_writer.h; sourceTree = "<group>"; };
 		CD2CE19120CFBA5800258630 /* learn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = learn.h; sourceTree = "<group>"; };
 		CD36924620E3740F00CE09F8 /* learn.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = learn.cpp; sourceTree = "<group>"; };
 		CD3979CF20C0450F004A30AD /* Learn_OpenGL_Demo */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Learn_OpenGL_Demo; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -111,6 +112,7 @@
 				CD6C2B6920C235490033D186 /* camera.h */,
 				CD3979EB20C0C027004A30AD /* stb_image.cpp */,
 				CD3979EC20C0C027004A30AD /* stb_image.h */,
+				CD0109BF20E9C6840086F302 /* vec_writer.h */,
 				CD3979E420C0A046004A30AD /* shader_s.h */,
 				CD6C2B8A20C7D75D0033D186 /* glp.h */,
 				CD3979D920C05096004A30AD /* glad.c */,

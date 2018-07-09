@@ -12,13 +12,13 @@
 Robot starting_models::getCuboid(int x, int y, int z) {
     std::mutex mtx;           // mutex for critical section
     std::unique_lock<std::mutex> lck (mtx,std::defer_lock);
-    Robot rob(&mtx, 2.0f);
+    Robot rob(&mtx, 2.0);
     
     Mass *massPointers[x][y][z];
     for (int i=0; i<x; i++){
         for (int j=0; j<y; j++){
             for (int k=0; k<z; k++){
-                massPointers[i][j][k] = new Mass(glm::vec3(i,j,k)*ROD_LENGTH,MASS_WEIGHT);
+                massPointers[i][j][k] = new Mass(glm::dvec3(i,j,k)*ROD_LENGTH,MASS_WEIGHT);
                 rob.addMass(massPointers[i][j][k]);
             }
         }
@@ -65,13 +65,13 @@ Robot starting_models::getCuboid(int x, int y, int z) {
 Robot starting_models::getTetrahedron(){
     std::mutex mtx;           // mutex for critical section
     std::unique_lock<std::mutex> lck (mtx,std::defer_lock);
-    Robot rob(&mtx, 2.0f);
+    Robot rob(&mtx, 2.0);
     
     std::vector<Mass *> masses;
-    masses.push_back(new Mass(glm::vec3(0,0,0),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(2,0,0),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(1,0,-2),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(1,1,-0.8),MASS_WEIGHT));
+    masses.push_back(new Mass(glm::dvec3(0,0,0),MASS_WEIGHT));
+    masses.push_back(new Mass(glm::dvec3(2,0,0),MASS_WEIGHT));
+    masses.push_back(new Mass(glm::dvec3(1,0,-2),MASS_WEIGHT));
+    masses.push_back(new Mass(glm::dvec3(1,1,-0.8),MASS_WEIGHT));
     for (Mass *m : masses)
         rob.addMass(m);
     
@@ -89,17 +89,17 @@ Robot starting_models::getTetrahedron(){
 Robot starting_models::getCube(){
     std::mutex mtx;           // mutex for critical section
     std::unique_lock<std::mutex> lck (mtx,std::defer_lock);
-    Robot rob(&mtx, 2.0f);
+    Robot rob(&mtx, 2.0);
     
     std::vector<Mass *> masses;
-    masses.push_back(new Mass(glm::vec3(0,0,0),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(ROD_LENGTH,0,0),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(0,ROD_LENGTH,0),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(ROD_LENGTH,ROD_LENGTH,0),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(0,0,-ROD_LENGTH),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(ROD_LENGTH,0,-ROD_LENGTH),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(0,ROD_LENGTH,-ROD_LENGTH),MASS_WEIGHT));
-    masses.push_back(new Mass(glm::vec3(ROD_LENGTH,ROD_LENGTH,-ROD_LENGTH),MASS_WEIGHT));
+    masses.push_back(new Mass(glm::dvec3(0,0,0),MASS_WEIGHT));
+    masses.push_back(new Mass(glm::dvec3(ROD_LENGTH,0,0),MASS_WEIGHT));
+    masses.push_back(new Mass(glm::dvec3(0,ROD_LENGTH,0),MASS_WEIGHT));
+    masses.push_back(new Mass(glm::dvec3(ROD_LENGTH,ROD_LENGTH,0),MASS_WEIGHT));
+    masses.push_back(new Mass(glm::dvec3(0,0,-ROD_LENGTH),MASS_WEIGHT));
+    masses.push_back(new Mass(glm::dvec3(ROD_LENGTH,0,-ROD_LENGTH),MASS_WEIGHT));
+    masses.push_back(new Mass(glm::dvec3(0,ROD_LENGTH,-ROD_LENGTH),MASS_WEIGHT));
+    masses.push_back(new Mass(glm::dvec3(ROD_LENGTH,ROD_LENGTH,-ROD_LENGTH),MASS_WEIGHT));
     
     for (Mass *m : masses)
         rob.addMass(m);
@@ -118,16 +118,16 @@ Robot starting_models::getCube(){
 Robot starting_models::getArrow(){
     std::mutex mtx;           // mutex for critical section
     std::unique_lock<std::mutex> lck (mtx,std::defer_lock);
-    Robot rob(&mtx, 2.0f);
+    Robot rob(&mtx, 2.0);
     
-    rob.addMass(new Mass(glm::vec3(0,0,0)*ROD_LENGTH,MASS_WEIGHT));
-    rob.addMass(new Mass(glm::vec3(1.5,0,0)*ROD_LENGTH,MASS_WEIGHT));
-    rob.addMass(new Mass(glm::vec3(0.75,0,-1)*ROD_LENGTH,MASS_WEIGHT));
-    rob.addMass(new Mass(glm::vec3(1.5,0.6,-1)*ROD_LENGTH,MASS_WEIGHT));
-    rob.addMass(new Mass(glm::vec3(0.3,0.8,-1)*ROD_LENGTH,MASS_WEIGHT));
-    rob.addMass(new Mass(glm::vec3(2.25,0,-1)*ROD_LENGTH,MASS_WEIGHT));
-    rob.addMass(new Mass(glm::vec3(0,0,-2)*ROD_LENGTH,MASS_WEIGHT));
-    rob.addMass(new Mass(glm::vec3(1.5,0,-2)*ROD_LENGTH,MASS_WEIGHT));
+    rob.addMass(new Mass(glm::dvec3(0,0,0)*ROD_LENGTH,MASS_WEIGHT));
+    rob.addMass(new Mass(glm::dvec3(1.5,0,0)*ROD_LENGTH,MASS_WEIGHT));
+    rob.addMass(new Mass(glm::dvec3(0.75,0,-1)*ROD_LENGTH,MASS_WEIGHT));
+    rob.addMass(new Mass(glm::dvec3(1.5,0.6,-1)*ROD_LENGTH,MASS_WEIGHT));
+    rob.addMass(new Mass(glm::dvec3(0.3,0.8,-1)*ROD_LENGTH,MASS_WEIGHT));
+    rob.addMass(new Mass(glm::dvec3(2.25,0,-1)*ROD_LENGTH,MASS_WEIGHT));
+    rob.addMass(new Mass(glm::dvec3(0,0,-2)*ROD_LENGTH,MASS_WEIGHT));
+    rob.addMass(new Mass(glm::dvec3(1.5,0,-2)*ROD_LENGTH,MASS_WEIGHT));
     
     std::vector<std::string> massPairs;
     std::vector<Spring *> springList;
@@ -141,7 +141,7 @@ Robot starting_models::getArrow(){
             std::stringstream ss2;
             ss2 << m2 << m1;
             const bool ss2Exists = std::find(massPairs.begin(), massPairs.end(), ss2.str()) != massPairs.end();
-            if (m1 != m2 && !ss1Exists && !ss2Exists && glm::distance(m2->pos,m1->pos) <= 2.7f){
+            if (m1 != m2 && !ss1Exists && !ss2Exists && glm::distance(m2->pos,m1->pos) <= 2.7){
                 Spring *s = rob.addSpring(m1,m2,SPRING_CONST);
                 springList.push_back(s);
                 massPairs.push_back(ss1.str());
@@ -153,26 +153,26 @@ Robot starting_models::getArrow(){
     assert(springList.size() > 1);
     
     rob.setSpringVec(springList);
-        
+    
     return rob;
 }
 
 Robot starting_models::getTetroid(){
     std::mutex mtx;           // mutex for critical section
     std::unique_lock<std::mutex> lck (mtx,std::defer_lock);
-    Robot rob(&mtx, 2.0f);
+    Robot rob(&mtx, 2.0);
     
-    for (float k=0;k<2;k++){
+    for (double k=0;k<2;k++){
         for (int i=0; i<3; i++)
-            rob.addMass(new Mass(glm::vec3(i+0.5,k*1.4,0)*ROD_LENGTH,MASS_WEIGHT));
+            rob.addMass(new Mass(glm::dvec3(i+0.5,k*1.4,0)*ROD_LENGTH,MASS_WEIGHT));
         for (int i=0; i<4; i++)
-            rob.addMass(new Mass(glm::vec3(i,k*1.4,-1)*ROD_LENGTH,MASS_WEIGHT));
+            rob.addMass(new Mass(glm::dvec3(i,k*1.4,-1)*ROD_LENGTH,MASS_WEIGHT));
         for (int i=0; i<3; i++)
-            rob.addMass(new Mass(glm::vec3(i+0.5,k*1.4,-2)*ROD_LENGTH,MASS_WEIGHT));
+            rob.addMass(new Mass(glm::dvec3(i+0.5,k*1.4,-2)*ROD_LENGTH,MASS_WEIGHT));
         
         for (int j=0; j<2 && k<1; j++){
             for (int i=0; i<3; i++)
-                rob.addMass(new Mass(glm::vec3(i+0.5,0.7+k*1.4,-0.5-j)*ROD_LENGTH,MASS_WEIGHT));
+                rob.addMass(new Mass(glm::dvec3(i+0.5,0.7+k*1.4,-0.5-j)*ROD_LENGTH,MASS_WEIGHT));
         }
     }
     
@@ -187,7 +187,7 @@ Robot starting_models::getTetroid(){
             std::stringstream ss2;
             ss2 << m2 << m1;
             const bool ss2Exists = std::find(massPairs.begin(), massPairs.end(), ss2.str()) != massPairs.end();
-            if (m1 != m2 && !ss1Exists && !ss2Exists && glm::distance(m2->pos,m1->pos) <= 1.8f){
+            if (m1 != m2 && !ss1Exists && !ss2Exists && glm::distance(m2->pos,m1->pos) <= 1.8){
                 Spring *s = rob.addSpring(m1,m2,SPRING_CONST);
                 springList.push_back(s);
                 massPairs.push_back(ss1.str());

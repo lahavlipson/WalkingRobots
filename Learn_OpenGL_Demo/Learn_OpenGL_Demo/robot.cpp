@@ -28,10 +28,10 @@ Robot::Robot(const std::string encoding){
         std::string massEncoding = objects[i];
         std::vector<std::string> massVec = helper::split(massEncoding, "|");
         assert(massVec.size()==3);
-        const float weight = stof(massVec[0]);
+        const double weight = stof(massVec[0]);
         std::vector<std::string> posVec = helper::split(massVec[1], ",");
         assert(posVec.size()==3);
-        const glm::vec3 pos(stof(posVec[0]),stof(posVec[1]),stof(posVec[2]));
+        const glm::dvec3 pos(stof(posVec[0]),stof(posVec[1]),stof(posVec[2]));
         
     }
     
@@ -48,9 +48,9 @@ std::ostream &operator<<(std::ostream &os, Robot &rob){
     return os;
 }
 
-glm::vec3 Robot::getPointToSpawnMass(){
-    const glm::vec3 centroid = calcCentroid();
-    float MaxRadius = 0;
+glm::dvec3 Robot::getPointToSpawnMass(){
+    const glm::dvec3 centroid = calcCentroid();
+    double MaxRadius = 0;
     for (auto it = masses.begin(); it != masses.end(); ++it){
         if (glm::distance(centroid, (*it)->pos) > MaxRadius){
             MaxRadius = glm::distance(centroid, (*it)->pos);
@@ -58,12 +58,12 @@ glm::vec3 Robot::getPointToSpawnMass(){
     }
     MaxRadius += 10;
     
-    glm::vec3 randomLoc;
-    float closestDist;
+    glm::dvec3 randomLoc;
+    double closestDist;
     do {
-        glm::vec3 randUnitVec(helper::myrandFloat()-0.5f,helper::myrandFloat()-0.5f,helper::myrandFloat()-0.5f);
+        glm::dvec3 randUnitVec(helper::myranddouble()-0.5,helper::myranddouble()-0.5,helper::myranddouble()-0.5);
         randUnitVec = glm::normalize(randUnitVec);
-        float randDistance = helper::myrandFloat()*MaxRadius;
+        double randDistance = helper::myranddouble()*MaxRadius;
         randomLoc = centroid + randUnitVec*randDistance;
         
         closestDist = FLT_MAX;
@@ -82,7 +82,7 @@ void Robot::attachMass(int connections, Mass *m){
         return;
     
     Mass *closestMasses[connections];
-    float closestMassesDists[connections];
+    double closestMassesDists[connections];
     for (int i=0; i<connections; i++) {
         closestMasses[i] = NULL;
         closestMassesDists[i] = -1;
@@ -94,7 +94,7 @@ void Robot::attachMass(int connections, Mass *m){
             bool noConflicts = true;
             for (int j=0; j<i; j++)
                 noConflicts = noConflicts && (m != closestMasses[j]);
-            float distToCheck = glm::distance(m->pos, m->pos);
+            double distToCheck = glm::distance(m->pos, m->pos);
             if (noConflicts & (closestMasses[i] == NULL || distToCheck < closestMassesDists[i])){
                 closestMasses[i] = m;
                 closestMassesDists[i] = distToCheck;
@@ -127,9 +127,9 @@ void Robot::addMass(Mass *m){
 }
 
 //MARK: - Spring Params
-Spring *Robot::addSpring(Mass *m1, Mass *m2, float constant){
-    static float phase = 0;
-    const float amplitude = 0.05;
+Spring *Robot::addSpring(Mass *m1, Mass *m2, double constant){
+    static double phase = 0;
+    const double amplitude = 0.05;
     Spring *s = new Spring(m1->mp(),m2->mp(),constant,0,0,0);
     phase += 0.22;
     springsMap.insert({s,std::make_tuple(m1,m2)});
@@ -138,12 +138,12 @@ Spring *Robot::addSpring(Mass *m1, Mass *m2, float constant){
     return s;
 }
 
-glm::vec3 Robot::calcCentroid(){
-    glm::vec3 centroid = glm::vec3();
+glm::dvec3 Robot::calcCentroid(){
+    glm::dvec3 centroid = glm::dvec3();
     for ( auto it = masses.begin(); it != masses.end(); ++it ){
         centroid = centroid + ((*it)->pos);
     }
-    return centroid * (1/float(masses.size()));
+    return centroid * (1/double(masses.size()));
 }
 
 
@@ -199,22 +199,22 @@ Robot& Robot::operator=(const Robot& old_robot){
     return *this;
 }
 
-float Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData){
+double Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData){
     //simulate and update all the masses and springs.
     //Then update the rodBufferData for all the springs
     //std::unique_lock<std::mutex> lck (*mtx,std::defer_lock);
     assert(!wasSimulated);
     wasSimulated = true;
     
-    glm::vec3 startingPos;// = calcCentroid();
+    glm::dvec3 startingPos;// = calcCentroid();
     bool alreadySetStartingPos = false;
-    const float TIME_TO_RECORD = 40.0f;
+    const double TIME_TO_RECORD = 40.0;
     
-    const float dt=0.001;
-    float t = 0;
+    const double dt=0.001;
+    double t = 0;
     
     int updateCounter = 0;
-    while (!stopSim && t < time){//(M_PI*float(2*cycles)/frequency)) {
+    while (!stopSim && t < time){//(M_PI*double(2*cycles)/frequency)) {
         if (uwait > 0)
             usleep(uwait);//1000 is normal
         
@@ -224,7 +224,7 @@ float Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData)
             alreadySetStartingPos = true;
            // printf("Rec! %f",t);
         }
-//        if (int(t*1000.0f)%200 == 0)
+//        if (int(t*1000.0)%200 == 0)
 //            printf("t is %f\n",t);
         
         if (updateCounter%50 == 0){
@@ -234,34 +234,34 @@ float Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData)
         updateCounter++;
         
         for (Mass *ms : masses){
-            glm::vec3 force;
+            glm::dvec3 force;
             force[1] = force[1] + ms->m*GRAVITY;
             force = force + pushForce;
-            const float DRAG = 0.01; //(0 = no drag)
-            force = force - ms->v*DRAG*(std::pow(glm::length(ms->v),1.0f));
+            const double DRAG = 0.01; //(0 = no drag)
+            force = force - ms->v*DRAG*(std::pow(glm::length(ms->v),1.0));
             for (Spring *spr : ms->springs){
-                glm::vec3 springForce = (spr->getVectorPointingToMass(&(ms->pos)))*(spr->calcForce(t));
+                glm::dvec3 springForce = (spr->getVectorPointingToMass(&(ms->pos)))*(spr->calcForce(t));
                 force = force + springForce;
             }
             if (ms->pos[1] < GROUND_LEVEL){
-                const float GROUND_HARDNESS = 1000;
-                const float GROUND_ELASTICITY = 0.93;
-                float normalForceMag = GROUND_HARDNESS*(GROUND_LEVEL - (ms->pos[1]));
+                const double GROUND_HARDNESS = 1000;
+                const double GROUND_ELASTICITY = 0.93;
+                double normalForceMag = GROUND_HARDNESS*(GROUND_LEVEL - (ms->pos[1]));
                 force[1] = force[1] + normalForceMag;
-                const float COEF_STATIC = 0.7;
-                float maxStaticFric = normalForceMag*COEF_STATIC;
+                const double COEF_STATIC = 0.7;
+                double maxStaticFric = normalForceMag*COEF_STATIC;
                 if (pow(force[0],2)+pow(force[2],2) < pow(maxStaticFric,2)) {
-                    ms->v = glm::vec3(0,ms->v[1],0);
+                    ms->v = glm::dvec3(0,ms->v[1],0);
                 }
                 ms->v = (ms->v)*GROUND_ELASTICITY;
             }
             
-            glm::vec3 acceleration = force*float(1/ms->m);
+            glm::dvec3 acceleration = force*double(1/ms->m);
             
             ms->v = ms->v + acceleration*(dt);
             
             //keep this in!!! just removed temporarily
-            const float MAX_SPEED = 1;
+            const double MAX_SPEED = 1;
             if (glm::length(ms->v) > MAX_SPEED)
                 ms->v = glm::normalize(ms->v)*MAX_SPEED;
         }
@@ -274,7 +274,7 @@ float Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData)
         t += dt;
     }
     
-    PRINT_F(glm::length(calcCentroid() - startingPos));
+   // PRINT_F(glm::length(calcCentroid() - startingPos));
     return glm::length(calcCentroid() - startingPos);
     
 }

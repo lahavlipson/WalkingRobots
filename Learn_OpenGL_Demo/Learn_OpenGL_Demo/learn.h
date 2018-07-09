@@ -33,12 +33,12 @@ inline Robot hillClimber(int generations){
     
     Robot bestSoFar = starting_models::getTetrahedron();
 
-    float bestDist = -1;
+    double bestDist = -1;
     while (numgens < generations) {
         
         std::cout << "gen: " << numgens << std::endl;
         
-        std::vector<float> scores;
+        std::vector<double> scores;
         std::vector<Robot> scoredBots;
         
          assert(scoredBots.size()==0);
@@ -46,7 +46,7 @@ inline Robot hillClimber(int generations){
         for (int i=0;i<NUMBER_CORES_ESTIMATE;i++){
             Robot r;
             scoredBots.push_back(r);
-            scores.push_back(-1.0f);
+            scores.push_back(-1.0);
         }
         
         #pragma omp parallel
@@ -61,7 +61,7 @@ inline Robot hillClimber(int generations){
                     mutatedBot.mutateSprings();
                 const Robot mutatedBotConst = mutatedBot;
                 
-                float distance = mutatedBot.simulate(0,20);
+                double distance = mutatedBot.simulate(0,20);
                 
                 assert(scores.size() > i);
                 scores[i] = distance;
@@ -71,7 +71,7 @@ inline Robot hillClimber(int generations){
         }
 
         for (int i=0;i<scores.size();i++){
-            float distance = scores[i];
+            double distance = scores[i];
             const Robot mutatedBotConst = scoredBots[i];
             mutatedBotConst.canDeRefMasses();//sanity check
             if (distance > bestDist){
@@ -91,21 +91,21 @@ inline Robot hillClimber(int generations){
     
     inline Robot poolClimber(int generations){
         const int POOL_SIZE = 32;
-        std::vector<std::tuple<Robot,float>> population;
+        std::vector<std::tuple<Robot,double>> population;
         
         //initialize population (all tetrahedrons)
         Robot tetra = starting_models::getTetrahedron();
         const Robot constTetra = tetra;
-        const float tetraScore = tetra.simulate(0,8);
+        const double tetraScore = tetra.simulate(0,8);
         int r=6;
         for (int i=0; i<POOL_SIZE; i++){
-            std::tuple<Robot,float> tup(constTetra, tetraScore);
+            std::tuple<Robot,double> tup(constTetra, tetraScore);
             population.push_back(tup);
         }
         assert(population.size() == POOL_SIZE);
         
         int numgens = 0;
-        float bestScore = 0;
+        double bestScore = 0;
         while (numgens < generations){
             
             std::cout << "gen: " << numgens << std::endl;
@@ -135,8 +135,8 @@ inline Robot hillClimber(int generations){
                 else
                     rob.mutateSprings();
                 const Robot constRob = rob;
-                const float score = rob.simulate(0,20);
-                std::tuple<Robot,float> tup(constRob, score);
+                const double score = rob.simulate(0,20);
+                std::tuple<Robot, double> tup(constRob, score);
                 population[i] = tup;
             }
             

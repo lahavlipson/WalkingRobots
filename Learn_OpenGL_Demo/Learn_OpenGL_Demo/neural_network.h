@@ -25,10 +25,10 @@
 
 namespace nn_helper {
     
-    inline Eigen::MatrixXd &activate(Eigen::MatrixXd &vec, float lift = 0.0f, float height = 1.0f, float width = 1.0f) {
+    inline Eigen::MatrixXd &activate(Eigen::MatrixXd &vec, double lift = 0.0, double height = 1.0, double width = 1.0) {
         assert(vec.rows() == 1);
         for (int i=0; i<vec.cols(); i++)
-            vec(0,i) = height/(1.0f+exp(-1.0f*(vec(0,i)/width))) + lift;
+            vec(0,i) = height/(1.0+exp(-1.0*(vec(0,i)/width))) + lift;
         return vec;
     }
     
@@ -48,15 +48,15 @@ class NeuralNetwork {
 public://make this private later
     
     std::vector<Eigen::MatrixXd> weights;
-    std::vector<std::vector<glm::vec3>> layers;
+    std::vector<std::vector<glm::dvec3>> layers;
     
-    std::vector<glm::vec3> springPosVec;
-    glm::vec3 springStartingPos;
+    std::vector<glm::dvec3> springPosVec;
+    glm::dvec3 springStartingPos;
     int hiddenDimension;
     
 public:
     
-    NeuralNetwork(std::vector<glm::vec3> springPos, glm::vec3 startingPos, int numHidden, int dimHidden);
+    NeuralNetwork(std::vector<glm::dvec3> springPos, glm::dvec3 startingPos, int numHidden, int dimHidden);
     
     NeuralNetwork(){}
     

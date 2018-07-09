@@ -12,8 +12,8 @@
 Robot learn::learnNeuralNetwork(int generations, bool evolve){
     const int POPULATION_SIZE = 64;
     Robot startingRob = starting_models::getArrow();
-    std::vector<glm::vec3> springPositions;//these are the precious spring positions
-    const glm::vec3 neuronStartingPos = startingRob.calcCentroid();
+    std::vector<glm::dvec3> springPositions;//these are the precious spring positions
+    const glm::dvec3 neuronStartingPos = startingRob.calcCentroid();
     for (Spring *s : startingRob.getSprings())
         springPositions.push_back(s->calcCenter());
     
@@ -21,11 +21,11 @@ Robot learn::learnNeuralNetwork(int generations, bool evolve){
     NeuralNetwork *nnp = new NeuralNetwork(springPositions,neuronStartingPos, 2, 12);
     assert(nnp->weights[0].rows() < 1000);
     startingRob.setNN(nnp);
-    float bestScore = 0.0f;
+    double bestScore = 0.0;
    // assert(bestScore != 0);
-    std::vector<std::tuple<NeuralNetwork,float> *> population;
+    std::vector<std::tuple<NeuralNetwork,double> *> population;
     for (int i=0; i<POPULATION_SIZE; i++){
-        std::tuple<NeuralNetwork,float> *tup_pointer = new std::tuple<NeuralNetwork,float>(NeuralNetwork(*nnp),bestScore);
+        std::tuple<NeuralNetwork,double> *tup_pointer = new std::tuple<NeuralNetwork,double>(NeuralNetwork(*nnp),bestScore);
         population.push_back(tup_pointer);
     }
     assert(population.size() == POPULATION_SIZE);
@@ -34,9 +34,9 @@ Robot learn::learnNeuralNetwork(int generations, bool evolve){
     writer.appendData(bestScore,1);
     
     //loop
-    for (int numGens = 1; bestScore <= 0.5f; numGens++){
+    for (int numGens = 1; numGens <= generations; numGens++){
         
-        std::cout << "Generation: " << numGens << " | " << bestScore << std::endl;
+        std::cout << "Generation: " << numGens << " | " << bestScore << "\nSims:";
         
         //Update
         #pragma omp parallel for
@@ -59,14 +59,14 @@ Robot learn::learnNeuralNetwork(int generations, bool evolve){
             
             Robot rob = starting_models::getArrow();
             rob.setNN(&offspring);
-            const float score = rob.simulate(0,60);
+            const double score = rob.simulate(0,60);
            // assert(score != 0);
             assert(k != 0);
             delete population[k];
-            population[k] = new std::tuple<NeuralNetwork,float>(offspring,score);
-            std::cout << "Sim: " << score << std::endl;
+            population[k] = new std::tuple<NeuralNetwork,double>(offspring,score);
+            //std::cout << "Sim: " << score << std::endl;
+            printf(" %f",score);
         }
-        
         
         
         assert(population.size() == POPULATION_SIZE);
@@ -82,7 +82,7 @@ Robot learn::learnNeuralNetwork(int generations, bool evolve){
             }
             
             // Swap the found maximum element with the first element (actually swapping their pointers)
-            std::tuple<NeuralNetwork,float> *tmp = population[i];
+            std::tuple<NeuralNetwork,double> *tmp = population[i];
             population[i] = population[max_idx];
             population[max_idx] = tmp;
         }
@@ -90,8 +90,9 @@ Robot learn::learnNeuralNetwork(int generations, bool evolve){
         
         if (std::get<1>(*(population[0])) > bestScore){
             bestScore = std::get<1>(*(population[0]));
-            std::cout << "New Record: " << bestScore << std::endl;
+            std::cout << "\nNew Record: " << bestScore;
         }
+        printf("\n---------------------------\n");
         
         writer.appendData(bestScore,POPULATION_SIZE/2);
         
@@ -104,6 +105,14 @@ Robot learn::learnNeuralNetwork(int generations, bool evolve){
     Robot rob = starting_models::getArrow();
     rob.setNN(bestNN);
     
+    Robot robcop1 = starting_models::getArrow();
+    robcop1.setNN(new NeuralNetwork(std::get<0>(*(population[0]))));
+    Robot robcop2 = starting_models::getArrow();
+    robcop2.setNN(new NeuralNetwork(std::get<0>(*(population[0]))));
+    float testSim1 = robcop1.simulate(0,60);
+    float testSim2 = robcop2.simulate(0,60);
+    ASSERT(testSim1 == testSim2, "testSim1 " << testSim1 << " testSim2 " << testSim2);
+    printf("PASSED!!!!!\n");
     
     return rob;
 }
@@ -122,20 +131,20 @@ Robot learn::learnNeuralNetwork(int generations, bool evolve){
 
 //TODO RUN AND TEST THIS
 Robot learn::climbNeuralNetwork(int generations){
-    std::array<std::tuple<NeuralNetwork,float> *,MAX_SIZE_NEEDED> mutations;
+    std::array<std::tuple<NeuralNetwork,double> *,MAX_SIZE_NEEDED> mutations;
     for (auto &ptr : mutations) ptr = NULL;
     
     //Initialize
     Robot startingRob = starting_models::getArrow();
-    std::vector<glm::vec3> springPositions;//these are the precious spring positions
-    const glm::vec3 neuronStartingPos = startingRob.calcCentroid();
+    std::vector<glm::dvec3> springPositions;//these are the precious spring positions
+    const glm::dvec3 neuronStartingPos = startingRob.calcCentroid();
     for (Spring *s : startingRob.getSprings())
         springPositions.push_back(s->calcCenter());
     
     
     NeuralNetwork bestNN(springPositions,neuronStartingPos, 7, 15);
     startingRob.setNN(&bestNN);
-    float bestScore = startingRob.simulate(0,30);
+    double bestScore = startingRob.simulate(0,30);
     
     //writer
     VecWriter writer("/Users/lahavlipson");
@@ -162,15 +171,15 @@ Robot learn::climbNeuralNetwork(int generations){
                 
                 Robot rob = starting_models::getArrow();
                 rob.setNN(&mutatedNN);
-                float score = rob.simulate(0,40);
-                mutations[i] = new std::tuple<NeuralNetwork,float>(mutatedNN,score);
+                double score = rob.simulate(0,40);
+                mutations[i] = new std::tuple<NeuralNetwork,double>(mutatedNN,score);
                 std::cout << "Sim: " << score << std::endl;
             }
         }
         
         for (auto &tup : mutations){
             if (tup != NULL){
-                float score = std::get<1>(*tup);
+                double score = std::get<1>(*tup);
                 if (score > bestScore){
                     bestScore = score;
                     bestNN = std::get<0>(*tup);
@@ -204,21 +213,21 @@ Robot learn::climbNeuralNetwork(int generations){
 void learn::checkFeedback(NeuralNetwork &adam_nn, int numGens, bool evolve){
     
     Robot startingRob = starting_models::getArrow();
-    const glm::vec3 neuronStartingPos = startingRob.calcCentroid();
+    const glm::dvec3 neuronStartingPos = startingRob.calcCentroid();
     
     const std::vector<Spring *> vecToCopy = startingRob.orderedListOfSprings;
-    std::vector<glm::vec3> springPositions;
+    std::vector<glm::dvec3> springPositions;
     for (int i=0; i<vecToCopy.size(); i++)
         springPositions.push_back(vecToCopy[i]->calcCenter());
     
-    float bestScore = 0.0f;
+    double bestScore = 0.0;
     
     const int POPULATION_SIZE = 1;
     
-    std::array<std::tuple<NeuralNetwork,float> *,POPULATION_SIZE> population;
+    std::array<std::tuple<NeuralNetwork,double> *,POPULATION_SIZE> population;
     for (auto &e : population){
        // NeuralNetwork adam_nn(springPositions,neuronStartingPos, 7, 13);
-        e = new std::tuple<NeuralNetwork,float>(adam_nn, bestScore);
+        e = new std::tuple<NeuralNetwork,double>(adam_nn, bestScore);
     }
     
     VecWriter writer("/Users/lahavlipson");
@@ -254,7 +263,7 @@ void learn::checkFeedback(NeuralNetwork &adam_nn, int numGens, bool evolve){
             const NeuralNetwork constTest_nn(test_nn);
             
             //Simulate
-            std::vector<std::vector<float>> timeSerieses(dummysprings.size());
+            std::vector<std::vector<double>> timeSerieses(dummysprings.size());
             const unsigned int startRec = 200;
             const unsigned int endRec = 700;
             for (int i=0; i<endRec; i++){
@@ -266,7 +275,7 @@ void learn::checkFeedback(NeuralNetwork &adam_nn, int numGens, bool evolve){
             }
             
             //Score
-            float totalVariance = 0.0f;
+            double totalVariance = 0.0;
             for (int i=0; i<dummysprings.size(); i++){
                 assert(timeSerieses[i].size() == (endRec-startRec));
                 totalVariance += helper::calcVariance(timeSerieses[i]);
@@ -278,7 +287,7 @@ void learn::checkFeedback(NeuralNetwork &adam_nn, int numGens, bool evolve){
             //Add to population
             //std::cout << "Sim: " << totalVariance << std::endl;
             delete population[n];
-            population[n] = new std::tuple<NeuralNetwork, float>(constTest_nn,totalVariance);
+            population[n] = new std::tuple<NeuralNetwork, double>(constTest_nn,totalVariance);
         }
         
         
@@ -294,7 +303,7 @@ void learn::checkFeedback(NeuralNetwork &adam_nn, int numGens, bool evolve){
             }
             
             // Swap the found maximum element with the first element (actually swapping their pointers)
-            std::tuple<NeuralNetwork,float> *tmp = population[i];
+            std::tuple<NeuralNetwork,double> *tmp = population[i];
             population[i] = population[max_idx];
             population[max_idx] = tmp;
         }

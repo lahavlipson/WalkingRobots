@@ -19,13 +19,13 @@ private:
     
     const char *systemRoot = NULL;
     
-    std::vector<float> Y;
+    std::vector<double> Y;
     
 public:
     
     VecWriter(const char *root):systemRoot(root){}
     
-    inline void appendData(float y, int n){
+    inline void appendData(double y, int n){
         for (int i=0; i<n; i++)
             this->Y.push_back(y);
     }

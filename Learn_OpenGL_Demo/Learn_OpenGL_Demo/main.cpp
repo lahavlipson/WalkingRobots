@@ -67,33 +67,33 @@ int main()
     srand(time(0));
     rand();
     
-    
-    Robot startingRob = starting_models::getArrow();
-    std::vector<glm::vec3> springPositions;//these are the precious spring positions
-    const glm::vec3 neuronStartingPos = startingRob.calcCentroid();
-    for (Spring *s : startingRob.getSprings())
-        springPositions.push_back(s->calcCenter());
-    
-    NeuralNetwork nnp(springPositions,neuronStartingPos, 2, 12);
-    
-    Robot robcop1 = starting_models::getArrow();
-    NeuralNetwork *nn1 = new NeuralNetwork(nnp);
-    robcop1.setNN(nn1);
-    Robot robcop2 = starting_models::getArrow();
-    NeuralNetwork *nn2 = new NeuralNetwork(nnp);
-    robcop2.setNN(nn2);
-    std::cout << *nn1 << "\n---------------------------------------------------------------\n\n\n" << *nn2;
-    std::cout << "\n---------------------------------------------------------------\n\n\n";
-    float testSim1 = robcop1.simulate(0,60);
-    std::cout << "\n\n\n\n\n\n\n---------------------------------------------------------------\n\n\n\n\n\n\n\n\n";
-    float testSim2 = robcop2.simulate(0,60);
-    ASSERT(testSim1 == testSim2, "testSim1 " << testSim1 << " testSim2 " << testSim2);
+ /*   for (int i=0; i<40; i++){
+        
+        Robot startingRob = starting_models::getArrow();
+        std::vector<glm::dvec3> springPositions;//these are the precious spring positions
+        const glm::dvec3 neuronStartingPos = startingRob.calcCentroid();
+        for (Spring *s : startingRob.getSprings())
+            springPositions.push_back(s->calcCenter());
+        
+        NeuralNetwork nnp(springPositions,neuronStartingPos, 2, 12);
+        
+        Robot robcop1 = starting_models::getArrow();
+        NeuralNetwork *nn1 = new NeuralNetwork(nnp);
+        robcop1.setNN(nn1);
+        Robot robcop2 = starting_models::getArrow();
+        NeuralNetwork *nn2 = new NeuralNetwork(nnp);
+        robcop2.setNN(nn2);
+        double testSim1 = robcop1.simulate(0,60);
+        double testSim2 = robcop2.simulate(0,60);
+        std::cout << testSim1 << "  " << testSim2 << "\n\n";
+    }
+   // ASSERT(testSim1 == testSim2, "testSim1 " << testSim1 << " testSim2 " << testSim2);
     
     
     return 0;
     //rob = learn::checkFeedback(300, true);
     
-    
+    */
     
     rob = learn::learnNeuralNetwork(10, true);
     
@@ -296,7 +296,7 @@ int renderRob(){
         for (Mass *m : rob.masses) {
             model = glm::mat4();
             lck.lock();
-            model = glm::translate(model, m->pos);
+            model = glm::translate(model, glm::vec3(m->pos));
             lck.unlock();
             lightingShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, sphereVerts.size()/6);
@@ -336,9 +336,9 @@ int renderRob(){
             lck.lock();
             glm::vec3 diff = glm::normalize(*(springs[i]->p2)-*(springs[i]->p1));
             glm::vec3 crossProd = glm::cross(glm::vec3(0,1,0),diff);
-            float angleDiff = acos(glm::dot(glm::vec3(0,1,0), diff));
+            float angleDiff = float(acos(glm::dot(glm::vec3(0,1,0), diff)));
             model = glm::mat4();
-            model = glm::translate(model, *(springs[i]->p1));
+            model = glm::translate(model, glm::vec3(*(springs[i]->p1)));
             lck.unlock();
             model = glm::rotate(model, angleDiff, crossProd);
             lightingShader.setMat4("model", model);
@@ -400,17 +400,17 @@ void processInput(GLFWwindow *window)
     
     
     
-    rob.pushForce = glm::vec3();
+    rob.pushForce = glm::dvec3();
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-        rob.pushForce = glm::vec3(0,0.1,-5);
+        rob.pushForce = glm::dvec3(0,0.1,-5);
     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
-        rob.pushForce = glm::vec3(0,0.1,5);
+        rob.pushForce = glm::dvec3(0,0.1,5);
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
-        rob.pushForce = glm::vec3(-5,0.1,0);
+        rob.pushForce = glm::dvec3(-5,0.1,0);
     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-        rob.pushForce = glm::vec3(5,0.1,0);
+        rob.pushForce = glm::dvec3(5,0.1,0);
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
-        rob.pushForce = glm::vec3(0,5,0);
+        rob.pushForce = glm::dvec3(0,5,0);
     static int oldDeletedState = GLFW_PRESS;
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && oldDeletedState != GLFW_PRESS){
         rob.removeMass(*(rob.masses.begin()));

@@ -22,7 +22,7 @@
 #include <string>
 #include <iostream>
 
-const float MASS_WEIGHT = 0.2;
+const double MASS_WEIGHT = 0.2;
 
 class Mass {
         
@@ -30,12 +30,12 @@ public:
     std::unordered_set<Spring *> springs;
     double a = 0.0;
     double m;
-    glm::vec3 v = glm::vec3(0,0,0);
-    glm::vec3 pos;
+    glm::dvec3 v = glm::dvec3(0,0,0);
+    glm::dvec3 pos;
     
-    Mass(glm::vec3 position, double mass):pos(position),m(mass){}
+    Mass(glm::dvec3 position, double mass):pos(position),m(mass){}
     
-    glm::vec3 *mp(){
+    glm::dvec3 *mp(){
         return &pos;
     }
     

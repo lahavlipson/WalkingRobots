@@ -9,13 +9,13 @@
 #include "neural_network.h"
 
 
-NeuralNetwork::NeuralNetwork(std::vector<glm::vec3> springPos, glm::vec3 startingPos, int numHidden, int dimHidden){
+NeuralNetwork::NeuralNetwork(std::vector<glm::dvec3> springPos, glm::dvec3 startingPos, int numHidden, int dimHidden){
     hiddenDimension = dimHidden;
     springPosVec = springPos;
     const int numLayers = 2 + numHidden;
     const int numWeights = 1 + numHidden;
     weights = std::vector<Eigen::MatrixXd>(numWeights);
-    layers = std::vector<std::vector<glm::vec3>>(numLayers);
+    layers = std::vector<std::vector<glm::dvec3>>(numLayers);
     
     //std::cout << "weights.size(): " << weights.size() << std::endl;
     for (int i=0; i<weights.size(); i++){
@@ -26,7 +26,7 @@ NeuralNetwork::NeuralNetwork(std::vector<glm::vec3> springPos, glm::vec3 startin
         if (i == weights.size()-1)
             nextSize = springPosVec.size();
         assert(nextSize < 1000 && previousSize < 1000);
-        weights[i] = (Eigen::MatrixXd::Random(previousSize,nextSize))*10.0f;
+        weights[i] = (Eigen::MatrixXd::Random(previousSize,nextSize))*10.0;
        // std::cout << weights[0].cols() << " " << i << std::endl;
     }
     
@@ -34,7 +34,7 @@ NeuralNetwork::NeuralNetwork(std::vector<glm::vec3> springPos, glm::vec3 startin
         if (i == 0 || i == numLayers-1){
             layers[i] = springPosVec;
         } else {
-            std::vector<glm::vec3> layer;
+            std::vector<glm::dvec3> layer;
             for (int i=0; i<hiddenDimension+1; i++)
                 layer.push_back(startingPos);
             layers[i] = layer;
@@ -51,12 +51,12 @@ NeuralNetwork& NeuralNetwork::operator=(const NeuralNetwork& old_nn){
     hiddenDimension = old_nn.hiddenDimension;
     
     const int numLayers = old_nn.layers.size();
-    layers = std::vector<std::vector<glm::vec3>>(numLayers);
+    layers = std::vector<std::vector<glm::dvec3>>(numLayers);
     for (int i=0; i<numLayers; i++){
         if (i == 0 || i == numLayers-1){
             layers[i] = springPosVec;
         } else {
-            std::vector<glm::vec3> layer;
+            std::vector<glm::dvec3> layer;
             for (int i=0; i<hiddenDimension+1; i++)
                 layer.push_back(springStartingPos);
             layers[i] = layer;
@@ -75,12 +75,12 @@ void NeuralNetwork::calculateNeuronPositions(){
         for (int r=1; r<layers.size()-1; r++){//for each hidden layer
             assert(layers.size() > 2);
             for (int i=0; i<layers[1].size(); i++){//nodes in current row
-                glm::vec3 average;
-                float totalWeight = 0.0f;
+                glm::dvec3 average;
+                double totalWeight = 0.0;
                 //next nodes
                 for (int j=0; j<layers[r+1].size(); j++){
                     assert(layers[r+1][j][0] < 100);
-                    const float singleWeight = fabsf(float((weights[r])(i,j)));
+                    const double singleWeight = fabsf(double((weights[r])(i,j)));
                     average += layers[r+1][j]*singleWeight;
                     totalWeight += singleWeight;
                 }
@@ -88,12 +88,12 @@ void NeuralNetwork::calculateNeuronPositions(){
                 //previous nodes
                 for (int j=0; j<layers[r-1].size(); j++){
                     assert(layers[r-1][j][0] < 100);
-                    const float singleWeight = fabsf(float((weights[r-1])(j,i)));
+                    const double singleWeight = fabsf(double((weights[r-1])(j,i)));
                     average += layers[r-1][j]*singleWeight;
                     totalWeight += singleWeight;
                 }
                 assert(!std::isnan(average[0]));
-                average *= 1.0f/totalWeight;
+                average *= 1.0/totalWeight;
                 assert(!std::isnan(average[0]));
                 layers[r][i] = average;
             }
@@ -135,7 +135,7 @@ void NeuralNetwork::evaluate(std::vector<Spring *> input){
             nn_helper::activate(data);
             data = nn_helper::appendBias(data);
         } else {
-            nn_helper::activate(data,0.7,0.6,5.4f);
+            nn_helper::activate(data,0.7,0.6,5.4);
         }
         
         //std::cout << "activated: " << data << "\n\n";
@@ -208,14 +208,14 @@ NeuralNetwork &NeuralNetwork::mutate(){
   //  std::cout << r << std::endl;
   //  std::cout << c << std::endl;
     
-    glm::vec3 p2 = layers[i+1][c];
-    glm::vec3 p1 = layers[i][r];
+    glm::dvec3 p2 = layers[i+1][c];
+    glm::dvec3 p1 = layers[i][r];
     const double distance = glm::distance(p2,p1);
     
-    const float height = 1.5f;
-    const float width = 0.5f;
+    const double height = 1.5;
+    const double width = 0.5;
     const double stdDev = 1;//height*exp(pow(distance,2)/(-width));
-    float number = helper::drawNormal(0.0,stdDev);
+    double number = helper::drawNormal(0.0,stdDev);
     weights[i](r,c) += (number*10);
     //PRINT_F(weights[i](r,c));
     

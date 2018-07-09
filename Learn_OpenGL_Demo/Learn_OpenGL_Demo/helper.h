@@ -53,14 +53,14 @@ namespace helper {
         }
     
     inline Mass *getCenterVec(Mass *m1, Mass *m2, Mass *m3){
-        const glm::vec3 scaledNormalVec = glm::cross((m2->pos)-(m1->pos),(m3->pos)-(m1->pos));
-        const glm::vec3 normalVec = glm::normalize(scaledNormalVec)*1.5f;
-        const glm::vec3 centroid = ((m1->pos)+(m2->pos)+(m3->pos))*0.333f;
+        const glm::dvec3 scaledNormalVec = glm::cross((m2->pos)-(m1->pos),(m3->pos)-(m1->pos));
+        const glm::dvec3 normalVec = glm::normalize(scaledNormalVec)*1.5;
+        const glm::dvec3 centroid = ((m1->pos)+(m2->pos)+(m3->pos))*0.333;
         return new Mass(centroid + normalVec, MASS_WEIGHT);
 
     }
     
-    inline std::string vecToStr(std::vector<float> vec){
+    inline std::string vecToStr(std::vector<double> vec){
         std::string output = "";
         for (int i=0; i<vec.size(); i++) {
             if (i > 0)
@@ -77,7 +77,7 @@ namespace helper {
         return std::min(f,max);
     }
     
-    inline float drawNormal(float mean, float stdDev){
+    inline double drawNormal(double mean, double stdDev){
         std::random_device rd;
         std::mt19937 e2(rd());
         std::normal_distribution<> dist(mean, stdDev);
@@ -97,21 +97,21 @@ namespace helper {
         return output;
     }
     
-    inline float myrandFloat(){
-        return float(myrand(1000000))/1000000.0f;
+    inline double myranddouble(){
+        return double(myrand(1000000))/1000000.0;
     }
     
-    inline float calcMean(std::vector<float> vec){
-        float total = 0;
-        for (float f : vec)
+    inline double calcMean(std::vector<double> vec){
+        double total = 0;
+        for (double f : vec)
             total += f;
         return total/vec.size();
     }
     
-    inline float calcVariance(std::vector<float> vec){
-        const float mean = calcMean(vec);
-        float var = 0;
-        for (float f : vec)
+    inline double calcVariance(std::vector<double> vec){
+        const double mean = calcMean(vec);
+        double var = 0;
+        for (double f : vec)
             var += (f-mean)*(f-mean);
         return var/(vec.size()-1);
     }

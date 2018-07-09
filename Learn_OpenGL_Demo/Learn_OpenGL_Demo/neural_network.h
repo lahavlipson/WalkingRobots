@@ -32,6 +32,15 @@ namespace nn_helper {
         return vec;
     }
     
+    inline Eigen::MatrixXd appendBias(Eigen::MatrixXd &vec){
+        assert(vec.rows() == 1);
+        Eigen::MatrixXd bias(1,1);
+        bias(0,0) = 1;
+        Eigen::MatrixXd newVec(1, vec.cols()+1);
+        newVec << vec, bias;
+        return newVec;
+    }
+    
 }
 
 class NeuralNetwork {
@@ -48,6 +57,8 @@ public://make this private later
 public:
     
     NeuralNetwork(std::vector<glm::vec3> springPos, glm::vec3 startingPos, int numHidden, int dimHidden);
+    
+    NeuralNetwork(){}
     
     NeuralNetwork (const NeuralNetwork &old_nn){
         *this = old_nn;

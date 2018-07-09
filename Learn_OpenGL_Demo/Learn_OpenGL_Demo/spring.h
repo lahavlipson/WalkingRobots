@@ -61,11 +61,11 @@ public:
         //Pointers will be null;
     }
     
-    inline glm::vec3 calcCenter(){
+    virtual inline glm::vec3 calcCenter() const{
         return (*p1 + *p2)*0.5f;
     }
     
-    inline double calcLength(){
+    virtual inline double calcLength() const{
         return glm::length(*p2-*p1);
     }
     
@@ -85,6 +85,28 @@ public:
         return os<<s.l_0<<"|"<<s.k<<"|"<<s.a<<"|"<<s.b<<"|"<<s.w<<"|"<<s.p1<<","<<s.p2;
     }
 
+};
+
+class DummySpring : public Spring {
+    
+public:
+    
+    glm::vec3 pos;
+    
+    DummySpring (const Spring &old_spring):Spring(old_spring){
+        const float r2 = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/0.8f));
+        l_0 = 1.1f+r2;
+        
+        pos = old_spring.calcCenter();
+    }
+    
+    virtual inline double calcLength() const{
+        return l_0;
+    }
+    
+    virtual inline glm::vec3 calcCenter() const{
+        return pos;
+    }
 };
 
 #endif /* spring_h */

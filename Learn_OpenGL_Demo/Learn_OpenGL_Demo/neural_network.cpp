@@ -19,14 +19,14 @@ NeuralNetwork::NeuralNetwork(std::vector<glm::vec3> springPos, glm::vec3 startin
     
     //std::cout << "weights.size(): " << weights.size() << std::endl;
     for (int i=0; i<weights.size(); i++){
-        int previousSize = dimHidden;
-        int nextSize = dimHidden;
+        int previousSize = hiddenDimension + 1;
+        int nextSize = hiddenDimension;
         if (i == 0)
-            previousSize = springPosVec.size();
+            previousSize = springPosVec.size()+1;
         if (i == weights.size()-1)
             nextSize = springPosVec.size();
         assert(nextSize < 1000 && previousSize < 1000);
-        weights[i] = (Eigen::MatrixXd::Random(previousSize,nextSize))*1.0f;
+        weights[i] = (Eigen::MatrixXd::Random(previousSize,nextSize))*10.0f;
        // std::cout << weights[0].cols() << " " << i << std::endl;
     }
     
@@ -35,7 +35,7 @@ NeuralNetwork::NeuralNetwork(std::vector<glm::vec3> springPos, glm::vec3 startin
             layers[i] = springPosVec;
         } else {
             std::vector<glm::vec3> layer;
-            for (int i=0; i<dimHidden; i++)
+            for (int i=0; i<hiddenDimension+1; i++)
                 layer.push_back(startingPos);
             layers[i] = layer;
         }
@@ -57,7 +57,7 @@ NeuralNetwork& NeuralNetwork::operator=(const NeuralNetwork& old_nn){
             layers[i] = springPosVec;
         } else {
             std::vector<glm::vec3> layer;
-            for (int i=0; i<hiddenDimension; i++)
+            for (int i=0; i<hiddenDimension+1; i++)
                 layer.push_back(springStartingPos);
             layers[i] = layer;
         }
@@ -69,6 +69,7 @@ NeuralNetwork& NeuralNetwork::operator=(const NeuralNetwork& old_nn){
 void NeuralNetwork::calculateNeuronPositions(){
     //Setting positions for layers:
     
+    return;//I just don't wanna bother rn
     
     for (int k=0; k<10; k++){//arbitrary number of cycles
         for (int r=1; r<layers.size()-1; r++){//for each hidden layer
@@ -114,10 +115,15 @@ void NeuralNetwork::calculateNeuronPositions(){
 
 void NeuralNetwork::evaluate(std::vector<Spring *> input){
     assert(weights.size() > 0);
-    ASSERT(input.size() == weights[0].rows(), "input size was " << input.size() << ", weights[0].rows() was " << weights[0].rows() << "\n");
+    ASSERT(input.size()+1 == weights[0].rows(), "input size+1 was " << (input.size()+1) << ", weights[0].rows() was " << weights[0].rows() << "\n");
     Eigen::MatrixXd data(1,input.size());
     for (int i=0; i<input.size(); i++)
         data(0,i) = input[i]->calcLength();
+    data = nn_helper::appendBias(data);
+    
+    //Printing out check
+    //std::cout << "Data: " << data << std::endl;
+    
     
     assert(weights.size()>0);
     for (int i=0; i<weights.size(); i++){
@@ -125,10 +131,12 @@ void NeuralNetwork::evaluate(std::vector<Spring *> input){
         
         data *= weights[i];
         //std::cout << "before actived: " << data << "\n\n";
-        if (i < weights.size()-1)
+        if (i < weights.size()-1){
             nn_helper::activate(data);
-        else
-            nn_helper::activate(data,0.9,0.2,5.4f);
+            data = nn_helper::appendBias(data);
+        } else {
+            nn_helper::activate(data,0.7,0.6,5.4f);
+        }
         
         //std::cout << "activated: " << data << "\n\n";
     }
@@ -137,7 +145,7 @@ void NeuralNetwork::evaluate(std::vector<Spring *> input){
     
     
     for (int i=0; i<input.size(); i++){
-        input[i]->l_0 = fminf((input[i]->l_0)*data(0,i),2.5f);
+        input[i]->l_0 = helper::restr((input[i]->l_0)*data(0,i),0.7,1.8);
     }
 }
 
@@ -206,9 +214,10 @@ NeuralNetwork &NeuralNetwork::mutate(){
     
     const float height = 1.5f;
     const float width = 0.5f;
-    const double stdDev = height*exp(pow(distance,2)/(-width));
+    const double stdDev = 1;//height*exp(pow(distance,2)/(-width));
     float number = helper::drawNormal(0.0,stdDev);
-    weights[i](r,c) *= number;
+    weights[i](r,c) += (number*10);
+    //PRINT_F(weights[i](r,c));
     
     return *this;
 }

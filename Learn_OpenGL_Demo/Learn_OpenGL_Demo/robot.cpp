@@ -88,15 +88,15 @@ void Robot::attachMass(int connections, Mass *m){
         closestMassesDists[i] = -1;
     }
 
-    std::unordered_set<Mass *>::iterator it;
+    //std::unordered_set<Mass *>::iterator it;
     for (int i = 0; i < connections; i++){
-        for (it = masses.begin(); it != masses.end(); ++it){
+        for (Mass *m : masses){
             bool noConflicts = true;
             for (int j=0; j<i; j++)
-                noConflicts = noConflicts && (*it != closestMasses[j]);
-            float distToCheck = glm::distance((*it)->pos, m->pos);
+                noConflicts = noConflicts && (m != closestMasses[j]);
+            float distToCheck = glm::distance(m->pos, m->pos);
             if (noConflicts & (closestMasses[i] == NULL || distToCheck < closestMassesDists[i])){
-                closestMasses[i] = *it;
+                closestMasses[i] = m;
                 closestMassesDists[i] = distToCheck;
             }
         }
@@ -117,12 +117,13 @@ void Robot::removeMass(Mass *m){
         springsMap.erase(spr);
         delete spr;
     }
-    masses.erase(m);
+    //masses.erase(m);
+    masses.erase(std::remove(masses.begin(), masses.end(), m), masses.end());
     delete m;
 }
 
 void Robot::addMass(Mass *m){
-    masses.insert(m);
+    masses.push_back(m);
 }
 
 //MARK: - Spring Params
@@ -181,7 +182,7 @@ Robot& Robot::operator=(const Robot& old_robot){
     
     for (Mass *m : old_robot.masses){
         Mass *newMass = oldMassToNew[m];
-        masses.insert(newMass);
+        masses.push_back(newMass);
         for (Spring *s : m->springs)
             newMass->springs.insert(oldSpringToNew[s]);
     }
@@ -207,10 +208,12 @@ float Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData)
     
     glm::vec3 startingPos;// = calcCentroid();
     bool alreadySetStartingPos = false;
-    const float TIME_TO_RECORD = 10.0f;
+    const float TIME_TO_RECORD = 40.0f;
     
     const float dt=0.001;
     float t = 0;
+    
+    int updateCounter = 0;
     while (!stopSim && t < time){//(M_PI*float(2*cycles)/frequency)) {
         if (uwait > 0)
             usleep(uwait);//1000 is normal
@@ -219,11 +222,15 @@ float Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData)
         if (!alreadySetStartingPos && t > TIME_TO_RECORD){
             startingPos = calcCentroid();
             alreadySetStartingPos = true;
+           // printf("Rec! %f",t);
         }
+//        if (int(t*1000.0f)%200 == 0)
+//            printf("t is %f\n",t);
         
-        static unsigned int updateCounter = 0;
-        if (updateCounter%50 == 0)
+        if (updateCounter%50 == 0){
             updateSprings();
+            //printf("%^&*");
+        }
         updateCounter++;
         
         for (Mass *ms : masses){
@@ -267,6 +274,7 @@ float Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData)
         t += dt;
     }
     
+    PRINT_F(glm::length(calcCentroid() - startingPos));
     return glm::length(calcCentroid() - startingPos);
     
 }

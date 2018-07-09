@@ -24,7 +24,7 @@
 
 #include <tuple>
 #include <unordered_map>
-#include <unordered_set>
+//#include <unordered_set>
 #include <random>
 #include <iostream>
 #include "helper.h"
@@ -36,7 +36,7 @@ const float GROUND_LEVEL = 0.0;
 
 class Robot {
     
-private:
+public:
     
     glm::vec3 getPointToSpawnMass();
     
@@ -52,8 +52,8 @@ private:
             printf("skipping spring updates\n");
     }
     
-public:
-    std::unordered_set<Mass *> masses;
+//public:
+    std::vector<Mass *> masses;
     std::mutex *mtx = NULL;
     std::unordered_map<Spring *,std::tuple<Mass *, Mass *>> springsMap;
     glm::vec3 pushForce;

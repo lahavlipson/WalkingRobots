@@ -10,8 +10,6 @@
 #define helper_h
 
 #include "mass.h"
-#include "spring.h"
-//#include "robot.h"
 #include <tuple>
 #include "omp.h"
 #include <algorithm>
@@ -72,6 +70,13 @@ namespace helper {
         return output;
     }
     
+    inline double restr(double f, double min, double max){
+        assert(max>min);
+        if (f < min)
+            return min;
+        return std::min(f,max);
+    }
+    
     inline float drawNormal(float mean, float stdDev){
         std::random_device rd;
         std::mt19937 e2(rd());
@@ -80,6 +85,7 @@ namespace helper {
     }
     
     inline int myrand(int n, int exclude = -1){
+        if (n==0) return 0;
         ASSERT(n>0 && n<1000,"n is " << n);
         std::random_device rd;  //Will be used to obtain a seed for the random number engine
         std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
@@ -93,6 +99,21 @@ namespace helper {
     
     inline float myrandFloat(){
         return float(myrand(1000000))/1000000.0f;
+    }
+    
+    inline float calcMean(std::vector<float> vec){
+        float total = 0;
+        for (float f : vec)
+            total += f;
+        return total/vec.size();
+    }
+    
+    inline float calcVariance(std::vector<float> vec){
+        const float mean = calcMean(vec);
+        float var = 0;
+        for (float f : vec)
+            var += (f-mean)*(f-mean);
+        return var/(vec.size()-1);
     }
     
 }

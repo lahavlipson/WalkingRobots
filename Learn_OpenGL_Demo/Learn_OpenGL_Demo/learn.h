@@ -23,10 +23,10 @@
 
 namespace learn {
     
-Robot evolveNeuralNetwork(int generations);
+void checkFeedback(NeuralNetwork &adam_nn, int numGens, bool evolve);
     
-Robot climbNeuralNetwork(int generations);
-
+Robot learnNeuralNetwork(int generations, bool evolve);
+    
 inline Robot hillClimber(int generations){
     
     int numgens = 0;

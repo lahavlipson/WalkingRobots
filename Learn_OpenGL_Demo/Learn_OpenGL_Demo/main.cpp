@@ -58,16 +58,44 @@ float lastFrame = 0.0f;
 glm::vec3 lightPos(6.2f, 7.0f, 5.0f);
 
 void runSim(Robot *rob){
-    rob->simulate(500,1000);
+  //  std::cout << *(rob->network);
+    rob->simulate(1000,60);
 }
 
 int main()
 {
-    
     srand(time(0));
     rand();
     
-    rob = learn::evolveNeuralNetwork(0);
+    
+    Robot startingRob = starting_models::getArrow();
+    std::vector<glm::vec3> springPositions;//these are the precious spring positions
+    const glm::vec3 neuronStartingPos = startingRob.calcCentroid();
+    for (Spring *s : startingRob.getSprings())
+        springPositions.push_back(s->calcCenter());
+    
+    NeuralNetwork nnp(springPositions,neuronStartingPos, 2, 12);
+    
+    Robot robcop1 = starting_models::getArrow();
+    NeuralNetwork *nn1 = new NeuralNetwork(nnp);
+    robcop1.setNN(nn1);
+    Robot robcop2 = starting_models::getArrow();
+    NeuralNetwork *nn2 = new NeuralNetwork(nnp);
+    robcop2.setNN(nn2);
+    std::cout << *nn1 << "\n---------------------------------------------------------------\n\n\n" << *nn2;
+    std::cout << "\n---------------------------------------------------------------\n\n\n";
+    float testSim1 = robcop1.simulate(0,60);
+    std::cout << "\n\n\n\n\n\n\n---------------------------------------------------------------\n\n\n\n\n\n\n\n\n";
+    float testSim2 = robcop2.simulate(0,60);
+    ASSERT(testSim1 == testSim2, "testSim1 " << testSim1 << " testSim2 " << testSim2);
+    
+    
+    return 0;
+    //rob = learn::checkFeedback(300, true);
+    
+    
+    
+    rob = learn::learnNeuralNetwork(10, true);
     
     #ifdef enable_graphics
     std::thread thrd = std::thread(runSim, &rob);

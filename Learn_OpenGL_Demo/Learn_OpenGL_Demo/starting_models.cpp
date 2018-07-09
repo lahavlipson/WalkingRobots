@@ -131,15 +131,17 @@ Robot starting_models::getArrow(){
     
     std::vector<std::string> massPairs;
     std::vector<Spring *> springList;
-    for (Mass *m1: rob.masses){
-        for (Mass *m2: rob.masses){
+    for (int g=0;g<rob.masses.size();g++){
+        Mass *m1 = rob.masses[g];
+        for (int h=0;h<rob.masses.size();h++){
+            Mass *m2 = rob.masses[h];
             std::stringstream ss1;
             ss1 << m1 << m2;
             const bool ss1Exists = std::find(massPairs.begin(), massPairs.end(), ss1.str()) != massPairs.end();
             std::stringstream ss2;
             ss2 << m2 << m1;
             const bool ss2Exists = std::find(massPairs.begin(), massPairs.end(), ss2.str()) != massPairs.end();
-            if (m1 != m2 && !ss1Exists && !ss2Exists && glm::distance(m2->pos,m1->pos) <= 2.4f){
+            if (m1 != m2 && !ss1Exists && !ss2Exists && glm::distance(m2->pos,m1->pos) <= 2.7f){
                 Spring *s = rob.addSpring(m1,m2,SPRING_CONST);
                 springList.push_back(s);
                 massPairs.push_back(ss1.str());
@@ -151,7 +153,7 @@ Robot starting_models::getArrow(){
     assert(springList.size() > 1);
     
     rob.setSpringVec(springList);
-    
+        
     return rob;
 }
 

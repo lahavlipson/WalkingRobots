@@ -1251,14 +1251,11 @@
 				COMPILER_INDEX_STORE_ENABLE = NO;
 				DEVELOPMENT_TEAM = SBGX5Q9V65;
 				HEADER_SEARCH_PATHS = (
-					/Users/lahavlipson/Personal,
-					"/Users/lahavlipson/Personal\\ Projects/Learn_OpenGL/build/Third_prty_libs/Includes/GLFW",
-					"/Users/lahavlipson/Personal\\ Projects/Learn_OpenGL/build/Third_prty_libs/Includes",
+					/Users/lahavlipson/Personal_Projects/Learn_OpenGL/build/Third_prty_libs/Includes/GLFW,
+					/Users/lahavlipson/Personal_Projects/Learn_OpenGL/build/Third_prty_libs/Includes,
 					/usr/local/opt/llvm/lib/clang/6.0.0/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
-					/Users/lahavlipson/Personal,
-					Projects/Learn_OpenGL/build/Third_prty_libs/Libs,
 					/usr/local/lib,
 					/usr/local/Cellar/glfw/3.2.1/lib,
 					/usr/local/opt/llvm/lib,
@@ -1281,14 +1278,11 @@
 				COMPILER_INDEX_STORE_ENABLE = NO;
 				DEVELOPMENT_TEAM = SBGX5Q9V65;
 				HEADER_SEARCH_PATHS = (
-					/Users/lahavlipson/Personal,
-					"/Users/lahavlipson/Personal\\ Projects/Learn_OpenGL/build/Third_prty_libs/Includes/GLFW",
-					"/Users/lahavlipson/Personal\\ Projects/Learn_OpenGL/build/Third_prty_libs/Includes",
+					/Users/lahavlipson/Personal_Projects/Learn_OpenGL/build/Third_prty_libs/Includes/GLFW,
+					/Users/lahavlipson/Personal_Projects/Learn_OpenGL/build/Third_prty_libs/Includes,
 					/usr/local/opt/llvm/lib/clang/6.0.0/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
-					/Users/lahavlipson/Personal,
-					Projects/Learn_OpenGL/build/Third_prty_libs/Libs,
 					/usr/local/lib,
 					/usr/local/Cellar/glfw/3.2.1/lib,
 					/usr/local/opt/llvm/lib,

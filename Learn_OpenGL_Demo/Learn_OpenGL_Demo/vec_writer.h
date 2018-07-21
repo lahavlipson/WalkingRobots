@@ -12,6 +12,31 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <tuple>
+#include <array>
+
+class DotWriter {
+    
+    const char *systemRoot = NULL;
+    
+    std::vector<std::tuple<int, double>> tuples;
+    
+public:
+    
+    DotWriter(const char *root):systemRoot(root){}
+    
+    inline void appendData(int x, double y){
+        tuples.push_back(std::make_tuple(x, y));
+    }
+    
+    inline void writeTo(const char *filePath){
+        std::ofstream myfile;
+        myfile.open (std::string(systemRoot)+"/"+std::string(filePath));
+        for (auto tup : tuples)
+            myfile << std::get<0>(tup) << "," << std::get<1>(tup) << "\n";
+        myfile.close();
+    }
+};
 
 class VecWriter {
 

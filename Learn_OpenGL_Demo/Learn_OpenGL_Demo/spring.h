@@ -19,9 +19,7 @@
 #include <stdio.h>
 #include <iostream>
 
-const double SPRING_CONST = 800.0;
-
-const double ROD_LENGTH = 1.5;
+const double SPRING_CONST = 8000.0;
 
 //void pv3(glm::dvec3 v){
 //    std::cout << "(" << v[0] << ", " << v[0] << ", " << v[0] << ")\n";

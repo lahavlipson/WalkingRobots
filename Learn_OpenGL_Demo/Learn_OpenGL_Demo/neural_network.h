@@ -22,6 +22,8 @@
 #include <cmath>
 #include "spring.h"
 #include "helper.h"
+#include <string>
+#include <fstream>
 
 namespace nn_helper {
     
@@ -46,6 +48,28 @@ namespace nn_helper {
 class NeuralNetwork {
 
 public://make this private later
+    
+    inline double distanceFrom(const NeuralNetwork &nn) const {
+        Eigen::MatrixXd diff = _vecForm() - nn._vecForm();
+        assert(diff.cols() > 1);
+        assert(diff.rows() == 1);
+        const Eigen::MatrixXd product = diff*(diff.transpose());
+        assert(product.rows()*product.cols() == 1);
+        return sqrt(product(0,0));
+    }
+    
+    inline Eigen::MatrixXd _vecForm() const{
+        Eigen::MatrixXd output(1,0);
+        for (int i=0; i<weights.size(); i++){
+            long dim = weights[i].rows() * weights[i].cols();
+            Eigen::MatrixXd tmp(1, output.cols()+dim);
+            Eigen::MatrixXd weightCopy = weights[i];
+            weightCopy.resize(1, dim);
+            tmp << output, weightCopy;
+            output = tmp;
+        }
+        return output;
+    }
     
     std::vector<Eigen::MatrixXd> weights;
     std::vector<std::vector<glm::dvec3>> layers;
@@ -75,6 +99,10 @@ public:
     NeuralNetwork &mutate();
     
     friend std::ostream &operator<<(std::ostream &os, NeuralNetwork &nn);
+    
+    void writeTo(const char *filePath);
+    
+    NeuralNetwork(std::vector<double> vec);
     
 };
 

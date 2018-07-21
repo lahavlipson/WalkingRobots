@@ -9,29 +9,35 @@
 #include <stdio.h>
 #include "learn.h"
 
+const double SIM_TIME = 300;
+
 Robot learn::learnNeuralNetwork(int generations, bool evolve){
-    const int POPULATION_SIZE = 64;
+    const int POPULATION_SIZE = 16;
     Robot startingRob = starting_models::getArrow();
     std::vector<glm::dvec3> springPositions;//these are the precious spring positions
     const glm::dvec3 neuronStartingPos = startingRob.calcCentroid();
     for (Spring *s : startingRob.getSprings())
         springPositions.push_back(s->calcCenter());
     
+    
     //Initialize population
-    NeuralNetwork *nnp = new NeuralNetwork(springPositions,neuronStartingPos, 2, 12);
-    assert(nnp->weights[0].rows() < 1000);
-    startingRob.setNN(nnp);
     double bestScore = 0.0;
-   // assert(bestScore != 0);
     std::vector<std::tuple<NeuralNetwork,double> *> population;
     for (int i=0; i<POPULATION_SIZE; i++){
-        std::tuple<NeuralNetwork,double> *tup_pointer = new std::tuple<NeuralNetwork,double>(NeuralNetwork(*nnp),bestScore);
+        NeuralNetwork nn(springPositions,neuronStartingPos, 3, 15);
+        std::tuple<NeuralNetwork,double> *tup_pointer = new std::tuple<NeuralNetwork,double>(nn,bestScore);
         population.push_back(tup_pointer);
     }
     assert(population.size() == POPULATION_SIZE);
     
-    VecWriter writer("/Users/lahavlipson");
-    writer.appendData(bestScore,1);
+    #ifdef enable_graphics
+    DotWriter dotWriter("/Users/lahavlipson/Personal_Projects/Learn_OpenGL/Learn_OpenGL_Demo/graphs");
+    VecWriter diversityWriter("/Users/lahavlipson/Personal_Projects/Learn_OpenGL/Learn_OpenGL_Demo/graphs");
+    #else
+    DotWriter dotWriter("/home/lol2107");
+    VecWriter diversityWriter("/home/lol2107");
+    #endif
+    //writer.appendData(bestScore,1);
     
     //loop
     for (int numGens = 1; numGens <= generations; numGens++){
@@ -59,7 +65,7 @@ Robot learn::learnNeuralNetwork(int generations, bool evolve){
             
             Robot rob = starting_models::getArrow();
             rob.setNN(&offspring);
-            const double score = rob.simulate(0,60);
+            const double score = rob.simulate(0,SIM_TIME);
            // assert(score != 0);
             assert(k != 0);
             delete population[k];
@@ -94,25 +100,47 @@ Robot learn::learnNeuralNetwork(int generations, bool evolve){
         }
         printf("\n---------------------------\n");
         
-        writer.appendData(bestScore,POPULATION_SIZE/2);
+        for (auto pt : population)
+            dotWriter.appendData((numGens-1)*(POPULATION_SIZE/2), std::get<1>(*pt));
+        
+        const int DIV_CHECK_WAIT = 5;
+        if (numGens%DIV_CHECK_WAIT == 1){
+            double averageDiversity = 0;
+            for (auto pt1 : population){
+                for (auto pt2 : population){
+                    averageDiversity += (std::get<0>(*pt1).distanceFrom(std::get<0>(*pt2)));
+                }
+            }
+            averageDiversity /= (POPULATION_SIZE * (POPULATION_SIZE-1))/2;
+            diversityWriter.appendData(averageDiversity, (POPULATION_SIZE/2)*DIV_CHECK_WAIT);
+        }
         
     }
 
-    writer.writeTo("Personal\ Projects/Learn_OpenGL/Learn_OpenGL_Demo/graphs/evolveNeuralNetwork.csv");
+    if (evolve){
+        dotWriter.writeTo("evolveNeuralNetwork.csv");
+        diversityWriter.writeTo("evolveNeuralNetworkDiv.csv");
+    }
+    else {
+        dotWriter.writeTo("climbNeuralNetwork.csv");
+        diversityWriter.writeTo("climbNeuralNetworkDiv.csv");
+    }
     
     NeuralNetwork *bestNN = new NeuralNetwork(std::get<0>(*(population[0])));
+    bestNN->writeTo("/Users/lahavlipson/Personal_Projects/Learn_OpenGL/myNN.csv");
     assert(std::get<1>(*(population[0])) == bestScore);
     Robot rob = starting_models::getArrow();
     rob.setNN(bestNN);
     
-    Robot robcop1 = starting_models::getArrow();
-    robcop1.setNN(new NeuralNetwork(std::get<0>(*(population[0]))));
-    Robot robcop2 = starting_models::getArrow();
-    robcop2.setNN(new NeuralNetwork(std::get<0>(*(population[0]))));
-    float testSim1 = robcop1.simulate(0,60);
-    float testSim2 = robcop2.simulate(0,60);
-    ASSERT(testSim1 == testSim2, "testSim1 " << testSim1 << " testSim2 " << testSim2);
-    printf("PASSED!!!!!\n");
+//    Robot robcop1 = starting_models::getArrow();
+//    robcop1.setNN(new NeuralNetwork(std::get<0>(*(population[0]))));
+//    Robot robcop2 = starting_models::getArrow();
+//    robcop2.setNN(new NeuralNetwork(std::get<0>(*(population[0]))));
+//    float testSim1 = robcop1.simulate(0,60);
+//    float testSim2 = robcop2.simulate(0,60);
+//    ASSERT(testSim1 == testSim2, "testSim1 " << testSim1 << " testSim2 " << testSim2);
+//    printf("PASSED!!!!!\n");
+    PRINT_F(bestScore);
     
     return rob;
 }
@@ -124,17 +152,7 @@ Robot learn::learnNeuralNetwork(int generations, bool evolve){
 
 
 
-
-
-
-/*
-
-//TODO RUN AND TEST THIS
-Robot learn::climbNeuralNetwork(int generations){
-    std::array<std::tuple<NeuralNetwork,double> *,MAX_SIZE_NEEDED> mutations;
-    for (auto &ptr : mutations) ptr = NULL;
-    
-    //Initialize
+Robot learn::learnNeuralNetworkPareto(int generations){
     Robot startingRob = starting_models::getArrow();
     std::vector<glm::dvec3> springPositions;//these are the precious spring positions
     const glm::dvec3 neuronStartingPos = startingRob.calcCentroid();
@@ -142,67 +160,141 @@ Robot learn::climbNeuralNetwork(int generations){
         springPositions.push_back(s->calcCenter());
     
     
-    NeuralNetwork bestNN(springPositions,neuronStartingPos, 7, 15);
-    startingRob.setNN(&bestNN);
-    double bestScore = startingRob.simulate(0,30);
+    double bestScore = 0.0;
+    std::vector<std::tuple<NeuralNetwork, double, int> *> population;
     
-    //writer
-    VecWriter writer("/Users/lahavlipson");
-    writer.appendData(bestScore,1);
-    int numCores;
+    
+#ifdef enable_graphics
+    DotWriter dotWriter("/Users/lahavlipson/Personal_Projects/Learn_OpenGL/Learn_OpenGL_Demo/graphs");
+    VecWriter diversityWriter("/Users/lahavlipson/Personal_Projects/Learn_OpenGL/Learn_OpenGL_Demo/graphs");
+#else
+    DotWriter dotWriter("/home/lol2107");
+    VecWriter diversityWriter("/home/lol2107");
+#endif
+    
+    int totalNumEvals = 0;
+    
+    const int NUMBER_OF_CORES = helper::numCores();
+    assert(NUMBER_OF_CORES == 4);
     
     //loop
     for (int numGens = 1; numGens <= generations; numGens++){
         
-        std::cout << "Generation: " << numGens << " | " << bestScore << std::endl;
+        //Update
+        const long CUR_POPULATION_SIZE = population.size();
         
-        #pragma omp parallel
-        {
-            numCores = omp_get_num_threads();
-            assert(numCores > 1);
+        std::cout << "Generation: " << numGens << "(" << CUR_POPULATION_SIZE << ") | " << bestScore << "\n";
+        
+        int numEvalsThisGen;
+        if (CUR_POPULATION_SIZE >= 2)
+            numEvalsThisGen = NUMBER_OF_CORES;
+        else
+            numEvalsThisGen = 1;
+        
+        assert(numEvalsThisGen == 1 || numEvalsThisGen == 4);
+        assert(population.size() == CUR_POPULATION_SIZE);
+        population.resize(CUR_POPULATION_SIZE+numEvalsThisGen, NULL);
+        assert(population.size() == (CUR_POPULATION_SIZE+numEvalsThisGen));
+        
+        #pragma omp parallel for
+        for (int k=NUMBER_OF_CORES-1; k>=0; k--){
             
-            #pragma omp for
-            for (int i=0;i<numCores;i++){
-                assert(mutations[i] == NULL);
+            if (k == 0){
+                //Add random
+                NeuralNetwork nn(springPositions,neuronStartingPos, 3, 15);
+                Robot rob = starting_models::getArrow();
+                rob.setNN(&nn);
+                const double score = rob.simulate(0,SIM_TIME);
+                population[CUR_POPULATION_SIZE] = new std::tuple<NeuralNetwork,double,int>(nn, score, 0);
+                //printf(" %f(1)",score);
+            } else if (CUR_POPULATION_SIZE >= 2) {
                 
-                NeuralNetwork mutatedNN = bestNN;
-                mutatedNN.calculateNeuronPositions();
-                mutatedNN.mutate();
+                int index1 = helper::myrand(CUR_POPULATION_SIZE);
+                int index2 = helper::myrand(CUR_POPULATION_SIZE,index1);
+                NeuralNetwork offspring = std::get<0>(*(population[index1])).crossOver(std::get<0>(*(population[index2])));
+                offspring.mutate();
                 
                 Robot rob = starting_models::getArrow();
-                rob.setNN(&mutatedNN);
-                double score = rob.simulate(0,40);
-                mutations[i] = new std::tuple<NeuralNetwork,double>(mutatedNN,score);
-                std::cout << "Sim: " << score << std::endl;
+                rob.setNN(&offspring);
+                const double score = rob.simulate(0,SIM_TIME);
+                
+                const int age = std::max(std::get<2>(*(population[index1])), std::get<2>(*(population[index2])));
+                
+                population[CUR_POPULATION_SIZE+k] = new std::tuple<NeuralNetwork,double,int>(offspring,score,age);
+                //printf(" %f(%d)",score,age);
             }
         }
         
-        for (auto &tup : mutations){
-            if (tup != NULL){
-                double score = std::get<1>(*tup);
-                if (score > bestScore){
-                    bestScore = score;
-                    bestNN = std::get<0>(*tup);
-                    std::cout << "New Record: " << bestScore << std::endl;
+        
+        totalNumEvals += numEvalsThisGen;
+        
+        
+        //Increment age
+        for (auto pt : population)
+            std::get<2>(*pt)++;
+        
+        //print population before cleaning
+        printf("before: ");
+        for (auto pt : population)
+            printf(" (%g, %d)", std::get<1>(*pt),std::get<2>(*pt));
+        
+        //Remove dominated models
+        for (long i=population.size()-1; i >= 0; i--){
+            const double score = std::get<1>(*(population[i]));
+            const int age = std::get<2>(*(population[i]));
+            for (int j=0; j<population.size(); j++){
+                const double cur_score = std::get<1>(*(population[j]));
+                const int cur_age = std::get<2>(*(population[j]));
+                if (i != j && score <= cur_score && age >= cur_age){
+                    delete population[i];
+                    population.erase(population.begin() + i);
+                    break;
                 }
-                tup = NULL;
             }
         }
         
-        writer.appendData(bestScore,numCores);
+        //print population after cleaning
+        printf("\nafter: ");
+        for (auto pt : population){
+            printf(" (%g, %d)", std::get<1>(*pt),std::get<2>(*pt));
+            dotWriter.appendData(totalNumEvals, std::get<1>(*pt));
+        }
+        
+        //Write diversity
+        double averageDiversity = 0;
+        for (auto pt1 : population){
+            for (auto pt2 : population){
+                averageDiversity += (std::get<0>(*pt1).distanceFrom(std::get<0>(*pt2)));
+            }
+        }
+        if (population.size()>1)
+            averageDiversity /= (population.size() * (population.size()-1))/2;
+        diversityWriter.appendData(averageDiversity, numEvalsThisGen);
+        
+        //Check for bestScore
+        for (auto pt : population){
+            if (std::get<1>(*pt) > bestScore){
+                bestScore = std::get<1>(*pt);
+                std::cout << "\nNew Record: " << bestScore << "(" << (std::get<2>(*pt)) << ")";
+            }
+        }
+        printf("\n---------------------------\n");
+        
+        
     }
     
+    dotWriter.writeTo("evolveNeuralNetworkPareto.csv");
+    diversityWriter.writeTo("evolveNeuralNetworkParetoDiv.csv");
     
-    writer.writeTo("Personal\ Projects/Learn_OpenGL/Learn_OpenGL_Demo/graphs/climbNeuralNetwork.csv");
-    
+    //obv this is wrong
+    NeuralNetwork *bestNN = new NeuralNetwork(std::get<0>(*(population[0])));
+    bestNN->writeTo("/Users/lahavlipson/Personal_Projects/Learn_OpenGL/myNN.csv");
+    assert(std::get<1>(*(population[0])) == bestScore);
     Robot rob = starting_models::getArrow();
-    rob.setNN(new NeuralNetwork(bestNN));
+    rob.setNN(bestNN);
+    
     return rob;
 }
-
-*/
-
-
 
 
 
@@ -213,7 +305,6 @@ Robot learn::climbNeuralNetwork(int generations){
 void learn::checkFeedback(NeuralNetwork &adam_nn, int numGens, bool evolve){
     
     Robot startingRob = starting_models::getArrow();
-    const glm::dvec3 neuronStartingPos = startingRob.calcCentroid();
     
     const std::vector<Spring *> vecToCopy = startingRob.orderedListOfSprings;
     std::vector<glm::dvec3> springPositions;

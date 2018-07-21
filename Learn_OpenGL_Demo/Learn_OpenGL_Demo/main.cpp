@@ -23,8 +23,6 @@
 #include "neural_network.h"
 #include "starting_models.h"
 
-#define enable_graphics
-
 #ifdef enable_graphics
 #include <GLFW/glfw3.h>
 #include "glp.h"
@@ -59,7 +57,7 @@ glm::vec3 lightPos(6.2f, 7.0f, 5.0f);
 
 void runSim(Robot *rob){
   //  std::cout << *(rob->network);
-    rob->simulate(1000,60);
+    rob->simulate(1000,10000);
 }
 
 int main()
@@ -67,35 +65,25 @@ int main()
     srand(time(0));
     rand();
     
- /*   for (int i=0; i<40; i++){
-        
-        Robot startingRob = starting_models::getArrow();
-        std::vector<glm::dvec3> springPositions;//these are the precious spring positions
-        const glm::dvec3 neuronStartingPos = startingRob.calcCentroid();
-        for (Spring *s : startingRob.getSprings())
-            springPositions.push_back(s->calcCenter());
-        
-        NeuralNetwork nnp(springPositions,neuronStartingPos, 2, 12);
-        
-        Robot robcop1 = starting_models::getArrow();
-        NeuralNetwork *nn1 = new NeuralNetwork(nnp);
-        robcop1.setNN(nn1);
-        Robot robcop2 = starting_models::getArrow();
-        NeuralNetwork *nn2 = new NeuralNetwork(nnp);
-        robcop2.setNN(nn2);
-        double testSim1 = robcop1.simulate(0,60);
-        double testSim2 = robcop2.simulate(0,60);
-        std::cout << testSim1 << "  " << testSim2 << "\n\n";
-    }
-   // ASSERT(testSim1 == testSim2, "testSim1 " << testSim1 << " testSim2 " << testSim2);
     
+//    std::vector<double> myvec = helper::csvToVec("/Users/lahavlipson/Downloads/myNN.csv");
+//    NeuralNetwork *bestNN = new NeuralNetwork(myvec);
+//    rob = starting_models::getArrow();
+//    rob.setNN(bestNN);
+//
+//    PRINT_F(bestNN->distanceFrom(*bestNN));
+    
+//    PRINT(bestNN->_vecForm());
+//
+//    printf("\n\nBREAK\n\n");
+//
+//    PRINT(*bestNN);
+    
+    
+    //rob = learn::learnNeuralNetwork(30, true);
+    rob = learn::learnNeuralNetworkPareto(1000);
     
     return 0;
-    //rob = learn::checkFeedback(300, true);
-    
-    */
-    
-    rob = learn::learnNeuralNetwork(10, true);
     
     #ifdef enable_graphics
     std::thread thrd = std::thread(runSim, &rob);
@@ -154,7 +142,7 @@ int renderRob(){
     
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader lightingShader("/Users/lahavlipson/Personal\ Projects/Learn_OpenGL/Learn_OpenGL_Demo/Learn_OpenGL_Demo/myvertexshader.glsl", "/Users/lahavlipson/Personal\ Projects/Learn_OpenGL/Learn_OpenGL_Demo/Learn_OpenGL_Demo/myfragshader.glsl");
+    Shader lightingShader("/Users/lahavlipson/Personal_Projects/Learn_OpenGL/Learn_OpenGL_Demo/Learn_OpenGL_Demo/myvertexshader.glsl", "/Users/lahavlipson/Personal_Projects/Learn_OpenGL/Learn_OpenGL_Demo/Learn_OpenGL_Demo/myfragshader.glsl");
     
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

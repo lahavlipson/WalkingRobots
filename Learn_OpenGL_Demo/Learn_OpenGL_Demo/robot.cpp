@@ -199,7 +199,7 @@ Robot& Robot::operator=(const Robot& old_robot){
     return *this;
 }
 
-double Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData){
+double Robot::simulate(int uwait, double time){//std::vector<double> &rodBufferData){
     //simulate and update all the masses and springs.
     //Then update the rodBufferData for all the springs
     //std::unique_lock<std::mutex> lck (*mtx,std::defer_lock);
@@ -208,32 +208,33 @@ double Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData
     
     glm::dvec3 startingPos;// = calcCentroid();
     bool alreadySetStartingPos = false;
-    const double TIME_TO_RECORD = 40.0;
     
     const double dt=0.001;
     double t = 0;
     
     int updateCounter = 0;
+    assert(time > TIME_TO_RECORD);
     while (!stopSim && t < time){//(M_PI*double(2*cycles)/frequency)) {
         if (uwait > 0)
             usleep(uwait);//1000 is normal
         
-        assert(time > TIME_TO_RECORD);
         if (!alreadySetStartingPos && t > TIME_TO_RECORD){
             startingPos = calcCentroid();
             alreadySetStartingPos = true;
-           // printf("Rec! %f",t);
+            //printf("Rec! %f",t);
         }
 //        if (int(t*1000.0)%200 == 0)
 //            printf("t is %f\n",t);
         
-        if (updateCounter%50 == 0){
+        if (updateCounter%20 == 0){
             updateSprings();
             //printf("%^&*");
         }
         updateCounter++;
         
         for (Mass *ms : masses){
+//            if (updateCounter%100 == 0)
+//            PRINT_F(ms->pos[1]);
             glm::dvec3 force;
             force[1] = force[1] + ms->m*GRAVITY;
             force = force + pushForce;
@@ -260,8 +261,8 @@ double Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData
             
             ms->v = ms->v + acceleration*(dt);
             
-            //keep this in!!! just removed temporarily
-            const double MAX_SPEED = 1;
+            //keep this in!!!
+            const double MAX_SPEED = 4.0;
             if (glm::length(ms->v) > MAX_SPEED)
                 ms->v = glm::normalize(ms->v)*MAX_SPEED;
         }
@@ -274,7 +275,7 @@ double Robot::simulate(int uwait, int time){//std::vector<double> &rodBufferData
         t += dt;
     }
     
-   // PRINT_F(glm::length(calcCentroid() - startingPos));
-    return glm::length(calcCentroid() - startingPos);
+    //PRINT_F(glm::length(calcCentroid() - startingPos));
+    return glm::length(calcCentroid() - startingPos)/(time - TIME_TO_RECORD);
     
 }

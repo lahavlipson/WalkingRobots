@@ -8,6 +8,8 @@
 
 #include "neural_network.h"
 
+const double WEIGHT_SCALE = 40;
+
 
 NeuralNetwork::NeuralNetwork(std::vector<glm::dvec3> springPos, glm::dvec3 startingPos, int numHidden, int dimHidden){
     hiddenDimension = dimHidden;
@@ -26,8 +28,9 @@ NeuralNetwork::NeuralNetwork(std::vector<glm::dvec3> springPos, glm::dvec3 start
         if (i == weights.size()-1)
             nextSize = springPosVec.size();
         assert(nextSize < 1000 && previousSize < 1000);
-        weights[i] = (Eigen::MatrixXd::Random(previousSize,nextSize))*10.0;
+        weights[i] = (Eigen::MatrixXd::Random(previousSize,nextSize))*WEIGHT_SCALE;
        // std::cout << weights[0].cols() << " " << i << std::endl;
+        
     }
     
     for (int i=0; i<numLayers; i++){
@@ -135,7 +138,7 @@ void NeuralNetwork::evaluate(std::vector<Spring *> input){
             nn_helper::activate(data);
             data = nn_helper::appendBias(data);
         } else {
-            nn_helper::activate(data,0.7,0.6,5.4);
+            nn_helper::activate(data,0.998,0.004,1.0);
         }
         
         //std::cout << "activated: " << data << "\n\n";
@@ -145,7 +148,7 @@ void NeuralNetwork::evaluate(std::vector<Spring *> input){
     
     
     for (int i=0; i<input.size(); i++){
-        input[i]->l_0 = helper::restr((input[i]->l_0)*data(0,i),0.7,1.8);
+        input[i]->l_0 = helper::restr((input[i]->l_0)*data(0,i),0.5,2.4);
     }
 }
 
@@ -204,19 +207,15 @@ NeuralNetwork &NeuralNetwork::mutate(){
     const int r = helper::myrand(weights[i].rows());
     const int c = helper::myrand(weights[i].cols());
     
-  //  std::cout << i << std::endl;
-  //  std::cout << r << std::endl;
-  //  std::cout << c << std::endl;
-    
-    glm::dvec3 p2 = layers[i+1][c];
-    glm::dvec3 p1 = layers[i][r];
-    const double distance = glm::distance(p2,p1);
+//    glm::dvec3 p2 = layers[i+1][c];
+//    glm::dvec3 p1 = layers[i][r];
+//    const double distance = glm::distance(p2,p1);
     
     const double height = 1.5;
     const double width = 0.5;
     const double stdDev = 1;//height*exp(pow(distance,2)/(-width));
     double number = helper::drawNormal(0.0,stdDev);
-    weights[i](r,c) += (number*10);
+    weights[i](r,c) += number*WEIGHT_SCALE;
     //PRINT_F(weights[i](r,c));
     
     return *this;
@@ -224,6 +223,37 @@ NeuralNetwork &NeuralNetwork::mutate(){
 
 std::ostream &operator<<(std::ostream &os, NeuralNetwork &nn){
     for (int i=0; i<nn.weights.size(); i++)
-        os << (nn.weights[i]).transpose() << "\n\n";
+        os << "Row " << i << "\n" << (nn.weights[i]).transpose() << "\n\n";
     return os;
+}
+
+void NeuralNetwork::writeTo(const char *filePath){
+    std::ofstream myfile;
+    myfile.open (std::string(filePath));
+    myfile << hiddenDimension << ",";
+    for (int w=0; w<weights.size(); w++){
+        Eigen::MatrixXd weightMatrix = weights[w];
+        myfile << weightMatrix.rows() << "," << weightMatrix.cols();
+        Eigen::MatrixXd v_copy = weightMatrix;
+        v_copy.resize(1, weightMatrix.rows()*weightMatrix.cols());  // No copy
+        for (long i=0; i<v_copy.cols(); i++)
+            myfile << "," << v_copy(0,i);
+        if (w < weights.size()-1)
+            myfile << ",";
+    }
+    myfile.close();
+}
+
+NeuralNetwork::NeuralNetwork(std::vector<double> vec){
+    hiddenDimension = (int)vec[0];
+    for (int i=1; i<vec.size();){
+        int rows = vec[i+0];
+        int cols = vec[i+1];
+        Eigen::MatrixXd weightMat(1,rows*cols);
+        for (int j=0; j<rows*cols; j++)
+            weightMat(0,j) = vec[i+2+j];
+        weightMat.resize(rows,cols);
+        weights.push_back(weightMat);
+        i += 2 + rows*cols;
+    }  
 }

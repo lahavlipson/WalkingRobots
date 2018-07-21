@@ -18,6 +18,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
 #include <iterator>
+#include <fstream>
+#include <sstream>
+#include "omp.h"
 
 #define PRINT(x) std::cout << #x" is " << x << std::endl
 #define PRINT_I(x) printf(#x" is %d\n",x)
@@ -60,7 +63,7 @@ namespace helper {
 
     }
     
-    inline std::string vecToStr(std::vector<double> vec){
+    inline std::string vtos(std::vector<double> vec){
         std::string output = "";
         for (int i=0; i<vec.size(); i++) {
             if (i > 0)
@@ -84,8 +87,8 @@ namespace helper {
         return dist(e2);
     }
     
-    inline int myrand(int n, int exclude = -1){
-        if (n==0) return 0;
+    inline int myrand(long n, long exclude = -1){
+        if (n<=1) return 0;
         ASSERT(n>0 && n<1000,"n is " << n);
         std::random_device rd;  //Will be used to obtain a seed for the random number engine
         std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
@@ -114,6 +117,32 @@ namespace helper {
         for (double f : vec)
             var += (f-mean)*(f-mean);
         return var/(vec.size()-1);
+    }
+    
+    inline std::vector<double> csvToVec(const char *filePath){
+        std::ifstream str(filePath);
+        std::vector<double>   result;
+        std::string                line;
+        std::getline(str,line);
+        
+        std::stringstream          lineStream(line);
+        std::string                cell;
+        // Line contains string of length > 0 then save it in vector
+        while(std::getline(lineStream,cell, ','))
+        {
+            result.push_back(stod(cell));
+        }
+        return result;
+    }
+    
+    inline int numCores(){
+        assert(omp_get_num_threads() == 1);
+        int output;
+        #pragma omp parallel
+        {
+            output = omp_get_num_threads();
+        }
+        return output;
     }
     
 }

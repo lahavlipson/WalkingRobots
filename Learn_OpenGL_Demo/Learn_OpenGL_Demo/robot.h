@@ -32,7 +32,7 @@
 
 const double GRAVITY = -9.81;
 const double GROUND_LEVEL = 0.0;
-
+const double TIME_TO_RECORD = 40.0;
 
 class Robot {
     
@@ -105,7 +105,7 @@ public:
     
     Spring *addSpring(Mass *m1, Mass *m2, double constant);
     
-    double simulate(int uwait, int time = 1000000);
+    double simulate(int uwait, double time = 1000000);
     
     void canDeRefMasses() const{
         for (Mass *mp : masses)

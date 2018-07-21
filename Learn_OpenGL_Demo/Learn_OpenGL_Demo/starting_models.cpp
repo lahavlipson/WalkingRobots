@@ -8,6 +8,7 @@
 
 #include "starting_models.h"
 
+const double ROD_LENGTH = 2.0;
 
 Robot starting_models::getCuboid(int x, int y, int z) {
     std::mutex mtx;           // mutex for critical section
@@ -141,7 +142,7 @@ Robot starting_models::getArrow(){
             std::stringstream ss2;
             ss2 << m2 << m1;
             const bool ss2Exists = std::find(massPairs.begin(), massPairs.end(), ss2.str()) != massPairs.end();
-            if (m1 != m2 && !ss1Exists && !ss2Exists && glm::distance(m2->pos,m1->pos) <= 2.7){
+            if (m1 != m2 && !ss1Exists && !ss2Exists && glm::distance(m2->pos,m1->pos) <= 3.7){
                 Spring *s = rob.addSpring(m1,m2,SPRING_CONST);
                 springList.push_back(s);
                 massPairs.push_back(ss1.str());

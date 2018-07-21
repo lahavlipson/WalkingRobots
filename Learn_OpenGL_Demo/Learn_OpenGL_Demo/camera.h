@@ -81,9 +81,9 @@ public:
         if (direction == RIGHT)
             Position += Right * velocity;
         if (direction == DOWN)
-            Position -= Up * velocity;
+            Position -= Up * velocity * 0.2f;
         if (direction == UP)
-            Position += Up * velocity;
+            Position += Up * velocity * 0.2f;
     }
     
     // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.

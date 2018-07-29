@@ -22,9 +22,9 @@
 #include <sstream>
 #include "omp.h"
 
-#define PRINT(x) std::cout << #x" is " << x << std::endl
-#define PRINT_I(x) printf(#x" is %d\n",x)
-#define PRINT_F(x) printf(#x" is %f\n",x)
+#define PRINT(x) std::cout << #x" is " << x << std::endl;
+#define PRINT_I(x) printf(#x" is %d\n",x);
+#define PRINT_F(x) printf(#x" is %f\n",x);
 
 #ifndef NDEBUG
 #   define ASSERT(condition, message) \
@@ -89,7 +89,6 @@ namespace helper {
     
     inline int myrand(long n, long exclude = -1){
         if (n<=1) return 0;
-        ASSERT(n>0 && n<1000,"n is " << n);
         std::random_device rd;  //Will be used to obtain a seed for the random number engine
         std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
         std::uniform_int_distribution<> dis(0, n-1);
@@ -101,7 +100,7 @@ namespace helper {
     }
     
     inline double myranddouble(){
-        return double(myrand(1000000))/1000000.0;
+        return myrand(1000000)/1000000.0;
     }
     
     inline double calcMean(std::vector<double> vec){

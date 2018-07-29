@@ -18,7 +18,6 @@
 #include <algorithm>
 #include <vector>
 #include "helper.h"
-#include "neural_network.h"
 
 namespace starting_models {
     Robot getCuboid(int x, int y, int z);

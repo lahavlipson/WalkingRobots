@@ -20,12 +20,13 @@
 #include <sstream>
 
 #include "learn.h"
-#include "neural_network.h"
 #include "starting_models.h"
 
 #ifdef enable_graphics
 #include <GLFW/glfw3.h>
 #include "glp.h"
+#include "unstructured_neural_network.h"
+#include "individual.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -65,25 +66,11 @@ int main()
     srand(time(0));
     rand();
     
-    
-//    std::vector<double> myvec = helper::csvToVec("/Users/lahavlipson/Downloads/myNN.csv");
-//    NeuralNetwork *bestNN = new NeuralNetwork(myvec);
-//    rob = starting_models::getArrow();
-//    rob.setNN(bestNN);
-//
-//    PRINT_F(bestNN->distanceFrom(*bestNN));
-    
-//    PRINT(bestNN->_vecForm());
-//
-//    printf("\n\nBREAK\n\n");
-//
-//    PRINT(*bestNN);
-    
-    
-    //rob = learn::learnNeuralNetwork(30, true);
+//    UnstructuredNeuralNetwork nn2(helper::csvToVec("/Users/lahavlipson/Downloads/bestNN.csv"));
+//    rob = starting_models::getTetrahedron();
+//    rob.setNN(&nn2);
+
     rob = learn::learnNeuralNetworkPareto(1000);
-    
-    return 0;
     
     #ifdef enable_graphics
     std::thread thrd = std::thread(runSim, &rob);

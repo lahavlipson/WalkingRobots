@@ -6,12 +6,12 @@
 //  Copyright © 2018 Lahav Lipson. All rights reserved.
 //
 
-#include "neural_network.h"
+#include "multilayer_neural_network.h"
 
 const double WEIGHT_SCALE = 40;
 
 
-NeuralNetwork::NeuralNetwork(std::vector<glm::dvec3> springPos, glm::dvec3 startingPos, int numHidden, int dimHidden){
+MultilayerNeuralNetwork::MultilayerNeuralNetwork(std::vector<glm::dvec3> springPos, glm::dvec3 startingPos, int numHidden, int dimHidden){
     hiddenDimension = dimHidden;
     springPosVec = springPos;
     const int numLayers = 2 + numHidden;
@@ -47,7 +47,7 @@ NeuralNetwork::NeuralNetwork(std::vector<glm::dvec3> springPos, glm::dvec3 start
     //calculateNeuronPositions();
 }
 
-NeuralNetwork& NeuralNetwork::operator=(const NeuralNetwork& old_nn){
+MultilayerNeuralNetwork& MultilayerNeuralNetwork::operator=(const MultilayerNeuralNetwork& old_nn){
     springPosVec = old_nn.springPosVec;
     springStartingPos = old_nn.springStartingPos;
     weights = old_nn.weights;
@@ -69,7 +69,7 @@ NeuralNetwork& NeuralNetwork::operator=(const NeuralNetwork& old_nn){
     return *this;
 }
 
-void NeuralNetwork::calculateNeuronPositions(){
+void MultilayerNeuralNetwork::calculateNeuronPositions(){
     //Setting positions for layers:
     
     return;//I just don't wanna bother rn
@@ -116,12 +116,12 @@ void NeuralNetwork::calculateNeuronPositions(){
     
 }
 
-void NeuralNetwork::evaluate(std::vector<Spring *> input){
+void MultilayerNeuralNetwork::evaluate(std::vector<Spring *> &springs) const{
     assert(weights.size() > 0);
-    ASSERT(input.size()+1 == weights[0].rows(), "input size+1 was " << (input.size()+1) << ", weights[0].rows() was " << weights[0].rows() << "\n");
-    Eigen::MatrixXd data(1,input.size());
-    for (int i=0; i<input.size(); i++)
-        data(0,i) = input[i]->calcLength();
+    ASSERT(springs.size()+1 == weights[0].rows(), "input size+1 was " << (springs.size()+1) << ", weights[0].rows() was " << weights[0].rows() << "\n");
+    Eigen::MatrixXd data(1,springs.size());
+    for (int i=0; i<springs.size(); i++)
+        data(0,i) = springs[i]->calcLength();
     data = nn_helper::appendBias(data);
     
     //Printing out check
@@ -147,14 +147,14 @@ void NeuralNetwork::evaluate(std::vector<Spring *> input){
    // PRINT(data);
     
     
-    for (int i=0; i<input.size(); i++){
-        input[i]->l_0 = helper::restr((input[i]->l_0)*data(0,i),0.5,2.4);
+    for (int i=0; i<springs.size(); i++){
+        springs[i]->l_0 = helper::restr((springs[i]->l_0)*data(0,i),0.5,2.4);
     }
 }
 
-NeuralNetwork NeuralNetwork::crossOver(NeuralNetwork &nn){
+MultilayerNeuralNetwork MultilayerNeuralNetwork::crossOver(MultilayerNeuralNetwork &nn){
     assert(layers.size()>2);
-    NeuralNetwork output = *this;
+    MultilayerNeuralNetwork output = *this;
     
     const long i = helper::myrand(output.weights.size());
     //std::cout << "THIS IS I: " << i << std::endl;
@@ -201,7 +201,7 @@ NeuralNetwork NeuralNetwork::crossOver(NeuralNetwork &nn){
     return output;
 }
 
-NeuralNetwork &NeuralNetwork::mutate(){
+MultilayerNeuralNetwork &MultilayerNeuralNetwork::mutate(){
     
     const int i = helper::myrand(weights.size());
     const int r = helper::myrand(weights[i].rows());
@@ -221,13 +221,13 @@ NeuralNetwork &NeuralNetwork::mutate(){
     return *this;
 }
 
-std::ostream &operator<<(std::ostream &os, NeuralNetwork &nn){
+std::ostream &operator<<(std::ostream &os, MultilayerNeuralNetwork &nn){
     for (int i=0; i<nn.weights.size(); i++)
         os << "Row " << i << "\n" << (nn.weights[i]).transpose() << "\n\n";
     return os;
 }
 
-void NeuralNetwork::writeTo(const char *filePath){
+void MultilayerNeuralNetwork::writeTo(const char *filePath){
     std::ofstream myfile;
     myfile.open (std::string(filePath));
     myfile << hiddenDimension << ",";
@@ -244,7 +244,7 @@ void NeuralNetwork::writeTo(const char *filePath){
     myfile.close();
 }
 
-NeuralNetwork::NeuralNetwork(std::vector<double> vec){
+MultilayerNeuralNetwork::MultilayerNeuralNetwork(std::vector<double> vec){
     hiddenDimension = (int)vec[0];
     for (int i=1; i<vec.size();){
         int rows = vec[i+0];

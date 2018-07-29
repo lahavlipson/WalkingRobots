@@ -16,21 +16,22 @@
 #include <algorithm>
 #include <vector>
 #include "helper.h"
-#include "neural_network.h"
+#include "multilayer_neural_network.h"
+#include "unstructured_neural_network.h"
 #include "starting_models.h"
 #include "vec_writer.h"
+#include "individual.h"
 #include <array>
 #include <string>
+#include <algorithm>
 
 #define enable_graphics
 
 namespace learn {
     
-    void checkFeedback(NeuralNetwork &adam_nn, int numGens, bool evolve);
-    
-    Robot learnNeuralNetwork(int generations, bool evolve);
-    
     Robot learnNeuralNetworkPareto(int generations);
+    
+    void nonDominatedSort(std::vector<Individual> &population);
     
 }
 

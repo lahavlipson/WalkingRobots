@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <iostream>
 
-const double SPRING_CONST = 8000.0;
+const double SPRING_CONST = 800.0;
 
 //void pv3(glm::dvec3 v){
 //    std::cout << "(" << v[0] << ", " << v[0] << ", " << v[0] << ")\n";
@@ -72,11 +72,11 @@ public:
     }
     
     inline glm::dvec3 getVectorPointingToMass(glm::dvec3 *pos_ptr){
-        assert(p1 != NULL && p2 != NULL);
-        glm::dvec3 v = glm::normalize(*p1-*p2);
+//        assert(p1 != NULL && p2 != NULL);
+//        glm::dvec3 v = glm::normalize(*p1-*p2);
         if (pos_ptr == p1)
-            return v;
-        return v*double(-1.0);
+            return glm::normalize(*p1-*p2);//v;
+        return glm::normalize(*p2-*p1);//v*-1.0;
     }
     
     friend std::ostream &operator<<(std::ostream &os, Spring &s) {

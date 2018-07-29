@@ -262,7 +262,7 @@ double Robot::simulate(int uwait, double time){//std::vector<double> &rodBufferD
             ms->v = ms->v + acceleration*(dt);
             
             //keep this in!!!
-            const double MAX_SPEED = 4.0;
+            const double MAX_SPEED = 2.5;
             if (glm::length(ms->v) > MAX_SPEED)
                 ms->v = glm::normalize(ms->v)*MAX_SPEED;
         }

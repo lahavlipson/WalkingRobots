@@ -47,7 +47,7 @@ Robot learn::learnNeuralNetworkPareto(int generations){
             numEvalsThisGen = 1 + CUR_POPULATION_SIZE/2;
         
         assert(population.size() == CUR_POPULATION_SIZE);
-        population.resize(CUR_POPULATION_SIZE+numEvalsThisGen, false);
+        population.resize(CUR_POPULATION_SIZE+numEvalsThisGen, Inactive);
         assert(population.size() == (CUR_POPULATION_SIZE+numEvalsThisGen));
         
         
@@ -55,7 +55,7 @@ Robot learn::learnNeuralNetworkPareto(int generations){
 #pragma omp parallel for
         for (long k=0; k<numEvalsThisGen; k++){
             if (k == numEvalsThisGen-1){
-                population[CUR_POPULATION_SIZE+k] = Individual(true);
+                population[CUR_POPULATION_SIZE+k] = Individual(Unstructured);
                 //printf(" %f(1)",score);
             } else if (k >= CUR_POPULATION_SIZE/2){
                 Individual offspring = population[helper::myrand(CUR_POPULATION_SIZE/2)];
@@ -82,7 +82,7 @@ Robot learn::learnNeuralNetworkPareto(int generations){
         printf("\nPopulation: ");
         for (int i=0; i<population.size(); i++){
             Individual p = population[i];
-            printf(" (%g, %d, %d, %g)", p.speed, p.age, p.rank, p.crowdingDistance);
+            printf(" (%g, %d, %d, %g)", population[i].speed, population[i].age, population[i].rank, population[i].crowdingDistance);
             dotWriter.appendData(totalNumEvals, p.speed);
         }
         
@@ -90,7 +90,7 @@ Robot learn::learnNeuralNetworkPareto(int generations){
         double averageDiversity = 0;
         for (Individual &p : population){
             for (Individual &q : population){
-                averageDiversity += (p.network.distanceFrom(q.network));
+                averageDiversity += (p.network->distanceFrom(*(q.network)));
             }
         }
         if (population.size()>1)
@@ -112,7 +112,7 @@ Robot learn::learnNeuralNetworkPareto(int generations){
     dotWriter.writeTo("evolveNeuralNetworkPareto.csv");
     diversityWriter.writeTo("evolveNeuralNetworkParetoDiv.csv");
     
-    UnstructuredNeuralNetwork *bestNN = new UnstructuredNeuralNetwork((population[0]).network);
+    UnstructuredNeuralNetwork *bestNN = nullptr;//new UnstructuredNeuralNetwork((population[0]).network);
 #ifdef enable_graphics
     bestNN->writeTo("/Users/lahavlipson/Personal_Projects/Learn_OpenGL/myNN.csv");
 #else

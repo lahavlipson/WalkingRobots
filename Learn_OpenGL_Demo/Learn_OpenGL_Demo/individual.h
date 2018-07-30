@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include "unstructured_neural_network.h"
 
+enum IndividualType { Unstructured, Layered, Inactive};
+
 class Individual {
     
 public:
@@ -23,15 +25,15 @@ public:
     int rank = -300;
     
     //Properties
-    UnstructuredNeuralNetwork network;
+    UnstructuredNeuralNetwork *network = nullptr;
     double speed;
     int age;
     
     
     
-    Individual(UnstructuredNeuralNetwork n, double s, int a):network(n),speed(s),age(a){}
+    Individual(UnstructuredNeuralNetwork *n, double s, int a):network(n),speed(s),age(a){}
     
-    Individual(bool activate);
+    Individual(IndividualType type);
     
     Individual crossover(Individual ind, bool withMutate = false);
     
@@ -42,12 +44,33 @@ public:
     //friend bool operator< (Individual const& ind_a, Individual const& ind_b);
     bool operator < (Individual const& ind) const;
     
+    Individual (const Individual &old_robot){
+        *this = old_robot;
+    }
+    
+    Individual& operator= (const Individual &ind){
+        if (network)
+            delete network;
+        network = new UnstructuredNeuralNetwork(*(ind.network));
+        
+        speed = ind.speed;
+        age = ind.age;
+        crowdingDistance = ind.crowdingDistance;
+        rank = ind.rank;
+        return *this;
+    }
+    
     static bool compSpeed(Individual *i, Individual *j){
         return i->speed < j->speed;
     }
     
     static bool compAge(Individual *i, Individual *j){
         return i->age < j->age;
+    }
+    
+    virtual ~Individual(){
+        if (network)
+            delete network;
     }
     
 };

@@ -8,19 +8,19 @@
 
 #include "individual.h"
 
-Individual::Individual(bool activate):network(UnstructuredNeuralNetwork(40)),age(1){
-    if (activate) speed = network.calcSpeed();
+Individual::Individual(IndividualType type):network(new UnstructuredNeuralNetwork(40)),age(1){
+    if (type != Inactive) speed = network->calcSpeed();
 }
 
 Individual Individual::crossover(Individual ind, bool withMutate){
-    UnstructuredNeuralNetwork newNetwork = network.crossover(ind.network);
-    if (withMutate) newNetwork.mutate();
-    return Individual(newNetwork, newNetwork.calcSpeed(), 1 + std::max(age,ind.age));
+    UnstructuredNeuralNetwork *newNetwork = new UnstructuredNeuralNetwork(network->crossover(*(ind.network)));
+    if (withMutate) newNetwork->mutate();
+    return Individual(newNetwork, newNetwork->calcSpeed(), 1 + std::max(age,ind.age));
     }
 
 void Individual::mutate(){
-    network.mutate();
-    speed = network.calcSpeed();
+    network->mutate();
+    speed = network->calcSpeed();
     age++;
 }
 

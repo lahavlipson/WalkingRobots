@@ -66,8 +66,8 @@ int main()
     srand(time(0));
     rand();
     
-//    UnstructuredNeuralNetwork nn2(helper::csvToVec("/Users/lahavlipson/Downloads/bestNN.csv"));
-//    rob = starting_models::getTetrahedron();
+//    UnstructuredNeuralNetwork nn2(helper::csvToVec("/Users/lahavlipson/Desktop/Robot_Simulations/Simulation9/bestNN.csv"));
+//    rob = starting_models::getArrow();
 //    rob.setNN(&nn2);
 
     rob = learn::learnNeuralNetworkPareto(1000);

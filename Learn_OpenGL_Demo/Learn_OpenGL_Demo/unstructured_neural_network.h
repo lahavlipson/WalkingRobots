@@ -55,7 +55,7 @@ public:
     
     void writeTo(const char *filePath);
     
-    double calcSpeed();
+    virtual double calcSpeed();
     
     friend std::ostream &operator<<(std::ostream &os, UnstructuredNeuralNetwork &nn);
     

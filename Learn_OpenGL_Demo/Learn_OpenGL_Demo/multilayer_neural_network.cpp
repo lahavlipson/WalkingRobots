@@ -10,6 +10,22 @@
 
 const double WEIGHT_SCALE = 40;
 
+MultilayerNeuralNetwork::MultilayerNeuralNetwork(int inputSize, int numHidden, int dimHidden){
+    hiddenDimension = dimHidden;
+    const int numWeights = 1 + numHidden;
+    weights = std::vector<Eigen::MatrixXd>(numWeights);
+    
+    for (int i=0; i<weights.size(); i++){
+        long previousSize = hiddenDimension + 1;
+        long nextSize = hiddenDimension;
+        if (i == 0)
+            previousSize = inputSize+1;
+        if (i == weights.size()-1)
+            nextSize = inputSize;
+        assert(nextSize < 1000 && previousSize < 1000);
+        weights[i] = (Eigen::MatrixXd::Random(previousSize,nextSize))*WEIGHT_SCALE;
+    }
+}
 
 MultilayerNeuralNetwork::MultilayerNeuralNetwork(std::vector<glm::dvec3> springPos, glm::dvec3 startingPos, int numHidden, int dimHidden){
     hiddenDimension = dimHidden;
@@ -19,10 +35,9 @@ MultilayerNeuralNetwork::MultilayerNeuralNetwork(std::vector<glm::dvec3> springP
     weights = std::vector<Eigen::MatrixXd>(numWeights);
     layers = std::vector<std::vector<glm::dvec3>>(numLayers);
     
-    //std::cout << "weights.size(): " << weights.size() << std::endl;
     for (int i=0; i<weights.size(); i++){
-        int previousSize = hiddenDimension + 1;
-        int nextSize = hiddenDimension;
+        long previousSize = hiddenDimension + 1;
+        long nextSize = hiddenDimension;
         if (i == 0)
             previousSize = springPosVec.size()+1;
         if (i == weights.size()-1)
@@ -138,70 +153,49 @@ void MultilayerNeuralNetwork::evaluate(std::vector<Spring *> &springs) const{
             nn_helper::activate(data);
             data = nn_helper::appendBias(data);
         } else {
-            nn_helper::activate(data,0.998,0.004,1.0);
+            nn_helper::activate(data,0.96,0.08,1.0);
         }
         
         //std::cout << "activated: " << data << "\n\n";
     }
-    
-   // PRINT(data);
-    
     
     for (int i=0; i<springs.size(); i++){
         springs[i]->l_0 = helper::restr((springs[i]->l_0)*data(0,i),0.5,2.4);
     }
 }
 
-MultilayerNeuralNetwork MultilayerNeuralNetwork::crossOver(MultilayerNeuralNetwork &nn){
+NeuralNetwork *MultilayerNeuralNetwork::crossover(NeuralNetwork *nn) const {
     assert(layers.size()>2);
-    MultilayerNeuralNetwork output = *this;
+    MultilayerNeuralNetwork *output = new MultilayerNeuralNetwork(*(dynamic_cast<MultilayerNeuralNetwork *>(nn)));
     
-    const long i = helper::myrand(output.weights.size());
-    //std::cout << "THIS IS I: " << i << std::endl;
-    assert(output.weights[i].rows() >= 5 && output.weights[i].cols()>=5);
-    const long r1 = (helper::myrand(output.weights[i].rows()-4))+1;
-    assert((output.weights[i].rows()-r1-3)>0);
-    const long r2 = (helper::myrand(output.weights[i].rows()-r1-3))+r1+2;
-    assert(output.weights[i].cols()>0);
-    const long c1 = (helper::myrand(output.weights[i].cols()-4))+1;
-    const long c2 = (helper::myrand(output.weights[i].cols()-c1-3))+c1+2;
+    const long i = helper::myrand(output->weights.size());
+    assert(output->weights[i].rows() >= 5 && output->weights[i].cols()>=5);
+    const long r1 = (helper::myrand(output->weights[i].rows()-4))+1;
+    assert((output->weights[i].rows()-r1-3)>0);
+    const long r2 = (helper::myrand(output->weights[i].rows()-r1-3))+r1+2;
+    assert(output->weights[i].cols()>0);
+    const long c1 = (helper::myrand(output->weights[i].cols()-4))+1;
+    const long c2 = (helper::myrand(output->weights[i].cols()-c1-3))+c1+2;
     
     assert(r1>0);
-    ASSERT(r2<output.weights[i].rows()-1,"output.weights[i].rows() = " << (output.weights[i].rows()));
+    ASSERT(r2<output->weights[i].rows()-1,"output.weights[i].rows() = " << (output->weights[i].rows()));
     assert(r2-r1 > 1);
     
-    const long r_section = helper::myrand(3);
-    const long c_section = helper::myrand(3);
-    long r_start = 0;
-    long r_end = r1;
-    long c_start = 0;
-    long c_end = c1;
-    
-    if (r_section == 1){
-        r_start = r1;
-        r_end = r2;
-    } else if (r_section == 2){
-        r_start = r2;
-        r_end = output.weights[i].rows();
-    }
-    
-    if (c_section == 1){
-        c_start = c1;
-        c_end = c2;
-    } else if (c_section == 2){
-        c_start = c2;
-        c_end = output.weights[i].cols();
-    }
-    
-   // std::cout << "r_start: " << r_start << std::endl;
-   // std::cout << "c_start: " << c_start << std::endl;
-    
-    output.weights[i].block(r_start,c_start,r_end-r_start,c_end-c_start) = nn.weights[i].block(r_start,c_start,r_end-r_start,c_end-c_start);
+    output->weights[i].block(r1,0,r2-r1,c1) = weights[i].block(r1,0,r2-r1,c1);//Left
+    output->weights[i].block(0,c1,r1,c2-c1) = weights[i].block(0,c1,r1,c2-c1) ;//Top
+    output->weights[i].block(r2,c1,weights[i].rows()-r2,c2-c1) = weights[i].block(r2,c1,weights[i].rows()-r2,c2-c1);//Bottom
+    output->weights[i].block(r1,c2,r2-r1,weights[i].cols()-c2) = weights[i].block(r1,c2,r2-r1,weights[i].cols()-c2);//Right
     
     return output;
 }
 
-MultilayerNeuralNetwork &MultilayerNeuralNetwork::mutate(){
+double MultilayerNeuralNetwork::calcSpeed() {
+    Robot rob = starting_models::getArrow();
+    rob.setNN(this);
+    return rob.simulate(0,SIM_TIME);
+}
+
+void MultilayerNeuralNetwork::mutate(){
     
     const int i = helper::myrand(weights.size());
     const int r = helper::myrand(weights[i].rows());
@@ -218,7 +212,6 @@ MultilayerNeuralNetwork &MultilayerNeuralNetwork::mutate(){
     weights[i](r,c) += number*WEIGHT_SCALE;
     //PRINT_F(weights[i](r,c));
     
-    return *this;
 }
 
 std::ostream &operator<<(std::ostream &os, MultilayerNeuralNetwork &nn){
@@ -242,6 +235,28 @@ void MultilayerNeuralNetwork::writeTo(const char *filePath){
             myfile << ",";
     }
     myfile.close();
+}
+
+double MultilayerNeuralNetwork::distanceFrom(const NeuralNetwork *nn) const {
+    Eigen::MatrixXd diff = _vecForm() - nn->_vecForm();
+    assert(diff.cols() > 1);
+    assert(diff.rows() == 1);
+    const Eigen::MatrixXd product = diff*(diff.transpose());
+    assert(product.rows()*product.cols() == 1);
+    return sqrt(product(0,0));
+}
+
+Eigen::MatrixXd MultilayerNeuralNetwork::_vecForm() const{
+    Eigen::MatrixXd output(1,0);
+    for (int i=0; i<weights.size(); i++){
+        long dim = weights[i].rows() * weights[i].cols();
+        Eigen::MatrixXd tmp(1, output.cols()+dim);
+        Eigen::MatrixXd weightCopy = weights[i];
+        weightCopy.resize(1, dim);
+        tmp << output, weightCopy;
+        output = tmp;
+    }
+    return output;
 }
 
 MultilayerNeuralNetwork::MultilayerNeuralNetwork(std::vector<double> vec){

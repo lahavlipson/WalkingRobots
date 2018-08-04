@@ -25,13 +25,13 @@ public:
     int rank = -300;
     
     //Properties
-    UnstructuredNeuralNetwork *network = nullptr;
+    NeuralNetwork *network = nullptr;
     double speed;
     int age;
     
+    IndividualType type = Inactive;
     
-    
-    Individual(UnstructuredNeuralNetwork *n, double s, int a):network(n),speed(s),age(a){}
+    Individual(NeuralNetwork *n, double s, int a, IndividualType t):network(n),speed(s),age(a),type(t){}
     
     Individual(IndividualType type);
     
@@ -49,15 +49,32 @@ public:
     }
     
     Individual& operator= (const Individual &ind){
-        if (network)
-            delete network;
-        network = new UnstructuredNeuralNetwork(*(ind.network));
         
+        if (ind.type == Unstructured){
+            if (network)
+                delete network;
+            network = new UnstructuredNeuralNetwork(*(dynamic_cast<UnstructuredNeuralNetwork *>(ind.network)));
+        }
+        else if (ind.type == Layered){
+            if (network)
+                delete network;
+            network = new MultilayerNeuralNetwork(*(dynamic_cast<MultilayerNeuralNetwork *>(ind.network)));
+        }
         speed = ind.speed;
         age = ind.age;
         crowdingDistance = ind.crowdingDistance;
         rank = ind.rank;
+        type = ind.type;
         return *this;
+    }
+    
+    NeuralNetwork *getLastingNetwork(){
+        if (type == Unstructured)
+            return new UnstructuredNeuralNetwork(*(dynamic_cast<UnstructuredNeuralNetwork *>(network)));
+        else if (type == Layered)
+            return new MultilayerNeuralNetwork(*(dynamic_cast<MultilayerNeuralNetwork *>(network)));
+        else
+            return nullptr;
     }
     
     static bool compSpeed(Individual *i, Individual *j){

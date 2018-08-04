@@ -10,7 +10,6 @@
 #define unstructured_neural_network_h
 
 #include <stdio.h>
-#include "Eigen/Dense"
 #include <vector>
 #include "spring.h"
 #include "helper.h"
@@ -19,8 +18,6 @@
 #include "robot.h"
 #include "starting_models.h"
 #include "math.h"
-
-const double SIM_TIME = 300;
 
 class UnstructuredNeuralNetwork : public NeuralNetwork {
     
@@ -49,22 +46,24 @@ public:
     virtual void evaluate(std::vector<Spring *> &springs) const;
     void evaluate(Eigen::MatrixXd &layer, int num_propagate) const;
     
-    UnstructuredNeuralNetwork crossover(UnstructuredNeuralNetwork &nn);
+    virtual NeuralNetwork *crossover(NeuralNetwork *nn) const;
     
-    UnstructuredNeuralNetwork &mutate();
+    virtual void mutate();
     
-    void writeTo(const char *filePath);
+    virtual void writeTo(const char *filePath);
     
     virtual double calcSpeed();
     
     friend std::ostream &operator<<(std::ostream &os, UnstructuredNeuralNetwork &nn);
     
-    double distanceFrom(const UnstructuredNeuralNetwork &nn) const;
+    virtual double distanceFrom(const NeuralNetwork *nn) const;
     
     friend bool operator==(const UnstructuredNeuralNetwork&, const UnstructuredNeuralNetwork&);
     
+    virtual ~UnstructuredNeuralNetwork(){}
+    
 private:
-    Eigen::MatrixXd _vecForm() const;
+    virtual Eigen::MatrixXd _vecForm() const;
     
 };
 

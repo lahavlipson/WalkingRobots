@@ -66,7 +66,7 @@ int main()
     srand(time(0));
     rand();
     
-//    UnstructuredNeuralNetwork nn2(helper::csvToVec("/Users/lahavlipson/Desktop/Robot_Simulations/Simulation9/bestNN.csv"));
+//    UnstructuredNeuralNetwork nn2(helper::csvToVec("/Users/lahavlipson/Downloads/evol/bestNN.csv"));
 //    rob = starting_models::getArrow();
 //    rob.setNN(&nn2);
 

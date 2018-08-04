@@ -23,6 +23,8 @@
 #include "helper.h"
 #include "neural_network.h"
 #include "spring.h"
+#include "robot.h"
+#include "starting_models.h"
 #include <string>
 #include <fstream>
 
@@ -52,29 +54,11 @@ namespace nn_helper {
 
 class MultilayerNeuralNetwork : public NeuralNetwork{
 
-public://make this private later
+private:
     
-    inline double distanceFrom(const MultilayerNeuralNetwork &nn) const {
-        Eigen::MatrixXd diff = _vecForm() - nn._vecForm();
-        assert(diff.cols() > 1);
-        assert(diff.rows() == 1);
-        const Eigen::MatrixXd product = diff*(diff.transpose());
-        assert(product.rows()*product.cols() == 1);
-        return sqrt(product(0,0));
-    }
+    virtual double distanceFrom(const NeuralNetwork *nn) const;
     
-    inline Eigen::MatrixXd _vecForm() const{
-        Eigen::MatrixXd output(1,0);
-        for (int i=0; i<weights.size(); i++){
-            long dim = weights[i].rows() * weights[i].cols();
-            Eigen::MatrixXd tmp(1, output.cols()+dim);
-            Eigen::MatrixXd weightCopy = weights[i];
-            weightCopy.resize(1, dim);
-            tmp << output, weightCopy;
-            output = tmp;
-        }
-        return output;
-    }
+    virtual Eigen::MatrixXd _vecForm() const;
     
     std::vector<Eigen::MatrixXd> weights;
     std::vector<std::vector<glm::dvec3>> layers;
@@ -86,6 +70,7 @@ public://make this private later
 public:
     
     MultilayerNeuralNetwork(std::vector<glm::dvec3> springPos, glm::dvec3 startingPos, int numHidden, int dimHidden);
+    MultilayerNeuralNetwork(int inputSize, int numHidden, int dimHidden);
     
     MultilayerNeuralNetwork(){}
     
@@ -97,17 +82,21 @@ public:
     
     void calculateNeuronPositions();
     
+    virtual double calcSpeed();
+    
     virtual void evaluate(std::vector<Spring *> &springs) const;
     
-    MultilayerNeuralNetwork crossOver(MultilayerNeuralNetwork &nn);
+    virtual NeuralNetwork *crossover(NeuralNetwork *nn) const;
     
-    MultilayerNeuralNetwork &mutate();
+    virtual void mutate();
     
     friend std::ostream &operator<<(std::ostream &os, MultilayerNeuralNetwork &nn);
     
-    void writeTo(const char *filePath);
+    virtual void writeTo(const char *filePath);
     
     MultilayerNeuralNetwork(std::vector<double> vec);
+    
+    virtual ~MultilayerNeuralNetwork() {}
     
 };
 

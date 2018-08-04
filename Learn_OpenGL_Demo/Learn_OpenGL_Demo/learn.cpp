@@ -82,7 +82,7 @@ Robot learn::learnNeuralNetworkPareto(int generations){
         printf("\nPopulation: ");
         for (int i=0; i<population.size(); i++){
             Individual p = population[i];
-            printf(" (%g, %d, %d, %g)", population[i].speed, population[i].age, population[i].rank, population[i].crowdingDistance);
+            printf(" (%g, %d, %d, %g)", p.speed, p.age, p.rank, p.crowdingDistance);
             dotWriter.appendData(totalNumEvals, p.speed);
         }
         
@@ -90,7 +90,7 @@ Robot learn::learnNeuralNetworkPareto(int generations){
         double averageDiversity = 0;
         for (Individual &p : population){
             for (Individual &q : population){
-                averageDiversity += (p.network->distanceFrom(*(q.network)));
+                averageDiversity += (p.network->distanceFrom(q.network));
             }
         }
         if (population.size()>1)
@@ -112,7 +112,7 @@ Robot learn::learnNeuralNetworkPareto(int generations){
     dotWriter.writeTo("evolveNeuralNetworkPareto.csv");
     diversityWriter.writeTo("evolveNeuralNetworkParetoDiv.csv");
     
-    UnstructuredNeuralNetwork *bestNN = nullptr;//new UnstructuredNeuralNetwork((population[0]).network);
+    NeuralNetwork *bestNN = (population[0]).getLastingNetwork();
 #ifdef enable_graphics
     bestNN->writeTo("/Users/lahavlipson/Personal_Projects/Learn_OpenGL/myNN.csv");
 #else
@@ -189,5 +189,5 @@ void learn::nonDominatedSort(std::vector<Individual> &population){
     }
     
     std::sort(population.begin(), population.end());
-    assert(population.size() < 2 || population[0] < population[population.size()-1]);
+    assert(population.size() < 10 || population[0] < population[population.size()-1]);
 }

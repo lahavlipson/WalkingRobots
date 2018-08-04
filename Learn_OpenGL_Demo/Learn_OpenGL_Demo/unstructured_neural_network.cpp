@@ -8,8 +8,8 @@
 
 #include "unstructured_neural_network.h"
 
-UnstructuredNeuralNetwork UnstructuredNeuralNetwork::crossover(UnstructuredNeuralNetwork &nn){
-    UnstructuredNeuralNetwork output = nn;
+NeuralNetwork *UnstructuredNeuralNetwork::crossover(NeuralNetwork *nn) const{
+    UnstructuredNeuralNetwork *output = new UnstructuredNeuralNetwork(*(dynamic_cast<UnstructuredNeuralNetwork *>(nn)));
     
     const long size = weights.rows();
     const long r1 = (helper::myrand(size-4))+1;
@@ -21,15 +21,15 @@ UnstructuredNeuralNetwork UnstructuredNeuralNetwork::crossover(UnstructuredNeura
     assert(r2-r1 > 1);
     assert(r2<size-1);
     
-    output.weights.block(r1,0,r2-r1,c1) = weights.block(r1,0,r2-r1,c1);//Left
-    output.weights.block(0,c1,r1,c2-c1) = weights.block(0,c1,r1,c2-c1) ;//Top
-    output.weights.block(r2,c1,size-r2,c2-c1) = weights.block(r2,c1,size-r2,c2-c1);//Bottom
-    output.weights.block(r1,c2,r2-r1,size-c2) = weights.block(r1,c2,r2-r1,size-c2);//Right
+    output->weights.block(r1,0,r2-r1,c1) = weights.block(r1,0,r2-r1,c1);//Left
+    output->weights.block(0,c1,r1,c2-c1) = weights.block(0,c1,r1,c2-c1) ;//Top
+    output->weights.block(r2,c1,size-r2,c2-c1) = weights.block(r2,c1,size-r2,c2-c1);//Bottom
+    output->weights.block(r1,c2,r2-r1,size-c2) = weights.block(r1,c2,r2-r1,size-c2);//Right
     
     return output;
 }
 
-UnstructuredNeuralNetwork &UnstructuredNeuralNetwork::mutate(){
+void UnstructuredNeuralNetwork::mutate(){
     const long size = weights.rows();
     const int r = helper::myrand(size);
     const int c = helper::myrand(size);
@@ -38,8 +38,6 @@ UnstructuredNeuralNetwork &UnstructuredNeuralNetwork::mutate(){
     double number = helper::drawNormal(0.0,stdDev);
     const double WEIGHT_SCALE = 1.0;
     weights(r,c) += number*WEIGHT_SCALE;
-    
-    return *this;
 }
 
 void UnstructuredNeuralNetwork::evaluate(Eigen::MatrixXd &layer, int num_propagate) const{
@@ -64,14 +62,14 @@ void UnstructuredNeuralNetwork::evaluate(std::vector<Spring *> &springs) const{
     
 }
 
-double UnstructuredNeuralNetwork::calcSpeed(){
+double UnstructuredNeuralNetwork::calcSpeed() {
     Robot rob = starting_models::getArrow();
     rob.setNN(this);
     return rob.simulate(0,SIM_TIME);
 }
 
-double UnstructuredNeuralNetwork::distanceFrom(const UnstructuredNeuralNetwork &nn) const {
-    Eigen::MatrixXd diff = _vecForm() - nn._vecForm();
+double UnstructuredNeuralNetwork::distanceFrom(const NeuralNetwork *nn) const {
+    Eigen::MatrixXd diff = _vecForm() - nn->_vecForm();
     assert(diff.cols() > 1);
     assert(diff.rows() == 1);
     const Eigen::MatrixXd product = diff*(diff.transpose());

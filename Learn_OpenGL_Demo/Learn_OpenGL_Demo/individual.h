@@ -51,13 +51,10 @@ public:
     Individual& operator= (const Individual &ind){
         
         if (ind.type == Unstructured){
-            if (network)
-                delete network;
+            if (network) delete network;
             network = new UnstructuredNeuralNetwork(*(dynamic_cast<UnstructuredNeuralNetwork *>(ind.network)));
-        }
-        else if (ind.type == Layered){
-            if (network)
-                delete network;
+        } else if (ind.type == Layered){
+            if (network) delete network;
             network = new MultilayerNeuralNetwork(*(dynamic_cast<MultilayerNeuralNetwork *>(ind.network)));
         }
         speed = ind.speed;

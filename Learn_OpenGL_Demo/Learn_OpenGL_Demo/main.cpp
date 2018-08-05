@@ -66,11 +66,18 @@ int main()
     srand(time(0));
     rand();
     
-//    UnstructuredNeuralNetwork nn2(helper::csvToVec("/Users/lahavlipson/Downloads/evol/bestNN.csv"));
+    
+    UnstructuredNeuralNetwork nn(40);
+//    MultilayerNeuralNetwork nn(19, 1, 21);
+//    std::cout << nn;return 0;
+    rob = starting_models::getArrow();
+    rob.setNN(&nn);
+    
+//    MultilayerNeuralNetwork nn2(helper::csvToVec("/Users/lahavlipson/Downloads/vibrating/bestNN.csv"));
 //    rob = starting_models::getArrow();
 //    rob.setNN(&nn2);
 
-    rob = learn::learnNeuralNetworkPareto(1000);
+//    rob = learn::learnNeuralNetworkPareto(1);
     
     #ifdef enable_graphics
     std::thread thrd = std::thread(runSim, &rob);

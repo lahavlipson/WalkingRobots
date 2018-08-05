@@ -12,6 +12,9 @@ Individual::Individual(IndividualType type):age(1),type(type){
     if (type == Unstructured){
         network = new UnstructuredNeuralNetwork(40);
         speed = network->calcSpeed();
+    } else if (type == Layered){
+        network = new MultilayerNeuralNetwork(19, 1, 21);
+        speed = network->calcSpeed();
     }
 }
 

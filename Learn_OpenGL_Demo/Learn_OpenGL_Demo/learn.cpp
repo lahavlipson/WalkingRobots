@@ -55,7 +55,7 @@ Robot learn::learnNeuralNetworkPareto(int generations){
 #pragma omp parallel for
         for (long k=0; k<numEvalsThisGen; k++){
             if (k == numEvalsThisGen-1){
-                population[CUR_POPULATION_SIZE+k] = Individual(Unstructured);
+                population[CUR_POPULATION_SIZE+k] = Individual(Layered);
                 //printf(" %f(1)",score);
             } else if (k >= CUR_POPULATION_SIZE/2){
                 Individual offspring = population[helper::myrand(CUR_POPULATION_SIZE/2)];

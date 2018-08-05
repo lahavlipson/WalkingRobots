@@ -8,7 +8,7 @@
 
 #include "multilayer_neural_network.h"
 
-const double WEIGHT_SCALE = 40;
+const double WEIGHT_SCALE = 1;
 
 MultilayerNeuralNetwork::MultilayerNeuralNetwork(int inputSize, int numHidden, int dimHidden){
     hiddenDimension = dimHidden;
@@ -165,7 +165,7 @@ void MultilayerNeuralNetwork::evaluate(std::vector<Spring *> &springs) const{
 }
 
 NeuralNetwork *MultilayerNeuralNetwork::crossover(NeuralNetwork *nn) const {
-    assert(layers.size()>2);
+    //assert(layers.size()>2);
     MultilayerNeuralNetwork *output = new MultilayerNeuralNetwork(*(dynamic_cast<MultilayerNeuralNetwork *>(nn)));
     
     const long i = helper::myrand(output->weights.size());

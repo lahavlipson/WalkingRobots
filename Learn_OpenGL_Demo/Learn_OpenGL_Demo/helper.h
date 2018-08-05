@@ -25,6 +25,7 @@
 #define PRINT(x) std::cout << #x" is " << x << std::endl;
 #define PRINT_I(x) printf(#x" is %d\n",x);
 #define PRINT_F(x) printf(#x" is %f\n",x);
+#define PRINT_V(x) printf(#x" is (%f,%f,%f)\n",x[0],x[1],x[2]);
 
 #ifndef NDEBUG
 #   define ASSERT(condition, message) \

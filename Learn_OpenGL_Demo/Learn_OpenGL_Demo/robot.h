@@ -49,7 +49,7 @@ public:
             assert(orderedListOfSprings.size() > 1);
             network->evaluate(orderedListOfSprings);
         } else
-            printf("skipping spring updates\n");
+            printf("Skipping spring updates.\n");
     }
     
 //public:

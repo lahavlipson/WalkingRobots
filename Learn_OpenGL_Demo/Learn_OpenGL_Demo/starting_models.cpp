@@ -76,14 +76,11 @@ Robot starting_models::getTetrahedron(){
     for (Mass *m : masses)
         rob.addMass(m);
     
-    std::vector<Spring *> springList;
     for (int i=0; i<masses.size(); i++){
         for (int j=i+1; j<masses.size(); j++){
             Spring *s = rob.addSpring(masses[i],masses[j],SPRING_CONST);
-            springList.push_back(s);
         }
     }
-    rob.setSpringVec(springList);
     return rob;
 }
 
@@ -131,7 +128,6 @@ Robot starting_models::getArrow(){
     rob.addMass(new Mass(glm::dvec3(1.5,0,-2)*ROD_LENGTH,MASS_WEIGHT));
     
     std::vector<std::string> massPairs;
-    std::vector<Spring *> springList;
     for (int g=0;g<rob.masses.size();g++){
         Mass *m1 = rob.masses[g];
         for (int h=0;h<rob.masses.size();h++){
@@ -144,16 +140,11 @@ Robot starting_models::getArrow(){
             const bool ss2Exists = std::find(massPairs.begin(), massPairs.end(), ss2.str()) != massPairs.end();
             if (m1 != m2 && !ss1Exists && !ss2Exists && glm::distance(m2->pos,m1->pos) <= 3.7){
                 Spring *s = rob.addSpring(m1,m2,SPRING_CONST);
-                springList.push_back(s);
                 massPairs.push_back(ss1.str());
                 massPairs.push_back(ss2.str());
             }
         }
     }
-    
-    assert(springList.size() > 1);
-    
-    rob.setSpringVec(springList);
     
     return rob;
 }
@@ -179,7 +170,6 @@ Robot starting_models::getTetroid(){
     
     
     std::vector<std::string> massPairs;
-    std::vector<Spring *> springList;
     for (Mass *m1: rob.masses){
         for (Mass *m2: rob.masses){
             std::stringstream ss1;
@@ -190,16 +180,11 @@ Robot starting_models::getTetroid(){
             const bool ss2Exists = std::find(massPairs.begin(), massPairs.end(), ss2.str()) != massPairs.end();
             if (m1 != m2 && !ss1Exists && !ss2Exists && glm::distance(m2->pos,m1->pos) <= 1.8){
                 Spring *s = rob.addSpring(m1,m2,SPRING_CONST);
-                springList.push_back(s);
                 massPairs.push_back(ss1.str());
                 massPairs.push_back(ss2.str());
             }
         }
     }
-    
-    assert(springList.size() > 1);
-    
-    rob.setSpringVec(springList);
     
     return rob;
 }

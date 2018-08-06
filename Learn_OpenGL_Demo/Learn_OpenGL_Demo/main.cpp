@@ -58,7 +58,7 @@ glm::vec3 lightPos(6.2f, 7.0f, 5.0f);
 
 void runSim(Robot *rob){
   //  std::cout << *(rob->network);
-    rob->simulate(1000,10000);
+    rob->simulate(300,10000);
 }
 
 int main()
@@ -66,18 +66,13 @@ int main()
     srand(time(0));
     rand();
     
+//    rob = starting_models::getTetrahedron();
     
-    UnstructuredNeuralNetwork nn(40);
-//    MultilayerNeuralNetwork nn(19, 1, 21);
-//    std::cout << nn;return 0;
+    UnstructuredNeuralNetwork nn2(helper::csvToVec("/Users/lahavlipson/Desktop/Robot_Simulations/Comparisons/nsga-unstructured/bestNN.csv"));
     rob = starting_models::getArrow();
-    rob.setNN(&nn);
-    
-//    MultilayerNeuralNetwork nn2(helper::csvToVec("/Users/lahavlipson/Downloads/vibrating/bestNN.csv"));
-//    rob = starting_models::getArrow();
-//    rob.setNN(&nn2);
+    rob.setNN(&nn2);
 
-//    rob = learn::learnNeuralNetworkPareto(1);
+//    rob = learn::learnNeuralNetworkPareto(40);
     
     #ifdef enable_graphics
     std::thread thrd = std::thread(runSim, &rob);
@@ -393,18 +388,7 @@ void processInput(GLFWwindow *window)
         rob.pushForce = glm::dvec3(5,0.1,0);
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
         rob.pushForce = glm::dvec3(0,5,0);
-    static int oldDeletedState = GLFW_PRESS;
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && oldDeletedState != GLFW_PRESS){
-        rob.removeMass(*(rob.masses.begin()));
-    }
-    oldDeletedState = glfwGetKey(window, GLFW_KEY_R);
     
-    
-    static int oldAttachedState = GLFW_PRESS;
-    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS && oldAttachedState != GLFW_PRESS){
-        rob.mutateMasses();
-    }
-    oldAttachedState = glfwGetKey(window, GLFW_KEY_T);
     
     
     

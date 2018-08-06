@@ -38,18 +38,16 @@ class Robot {
     
 public:
     
-    glm::dvec3 getPointToSpawnMass();
-    
     //Used for updating weights
-    std::vector<Spring *> orderedListOfSprings;
+    std::vector<Spring *> springList;
     NeuralNetwork *network = NULL;
     
     inline void updateSprings(){
-        if (network != NULL && orderedListOfSprings.size() > 0){
-            assert(orderedListOfSprings.size() > 1);
-            network->evaluate(orderedListOfSprings);
+        if (network){
+            assert(springList.size() > 1);
+            network->evaluate(springList);
         } else
-            printf("Skipping spring updates.\n");
+            printf("Network is NULL\n");
     }
     
 //public:
@@ -63,10 +61,6 @@ public:
     
     inline void setNN(NeuralNetwork *nn){
         network = nn;
-    }
-    
-    inline void setSpringVec(std::vector<Spring *> vec){
-        orderedListOfSprings = vec;
     }
     
     Robot(std::mutex *mutex, double freq):mtx(mutex),frequency(freq){}
@@ -84,22 +78,6 @@ public:
     glm::dvec3 calcCentroid();
     
     void addMass(Mass *m);
-    
-    void removeMass(Mass *m);
-    
-    void attachMass(int connections, Mass *m);
-    
-    void mutateMasses(){
-        Mass *m = new Mass(getPointToSpawnMass(), MASS_WEIGHT);
-        attachMass(4, m);
-    }
-    
-    void mutateSprings(){
-        int index = helper::myrand(springsMap.size());
-        Spring *s = getSprings()[index];
-        double r = static_cast <double> (rand()) / (static_cast <double> (RAND_MAX/(2*M_PI)));
-        s->b = r;
-    }
     
     std::vector<Spring *> getSprings();
     

@@ -16,29 +16,6 @@
 #include <stdio.h>
 #include <sstream>
 
-// MARK: Robot(encoding)
-
-Robot::Robot(const std::string encoding){
-    std::vector<std::string> objects = helper::split(encoding, "$");
-    const int numMasses = stoi(objects[0]);
-    const int numSprings = stoi(objects[1]);
-    assert(objects.size() == 3+numMasses+numSprings);
-    
-    for (int i=2;i<2+numMasses;i++){
-        std::string massEncoding = objects[i];
-        std::vector<std::string> massVec = helper::split(massEncoding, "|");
-        assert(massVec.size()==3);
-        const double weight = stof(massVec[0]);
-        std::vector<std::string> posVec = helper::split(massVec[1], ",");
-        assert(posVec.size()==3);
-        const glm::dvec3 pos(stof(posVec[0]),stof(posVec[1]),stof(posVec[2]));
-        
-    }
-    
-    //NEED TO FINISH
-    
-}
-
 std::ostream &operator<<(std::ostream &os, Robot &rob){
     os << rob.masses.size() << "$" << rob.springsMap.size() << "$";
     for (Mass *m : rob.masses)
@@ -48,91 +25,15 @@ std::ostream &operator<<(std::ostream &os, Robot &rob){
     return os;
 }
 
-glm::dvec3 Robot::getPointToSpawnMass(){
-    const glm::dvec3 centroid = calcCentroid();
-    double MaxRadius = 0;
-    for (auto it = masses.begin(); it != masses.end(); ++it){
-        if (glm::distance(centroid, (*it)->pos) > MaxRadius){
-            MaxRadius = glm::distance(centroid, (*it)->pos);
-        }
-    }
-    MaxRadius += 10;
-    
-    glm::dvec3 randomLoc;
-    double closestDist;
-    do {
-        glm::dvec3 randUnitVec(helper::myranddouble()-0.5,helper::myranddouble()-0.5,helper::myranddouble()-0.5);
-        randUnitVec = glm::normalize(randUnitVec);
-        double randDistance = helper::myranddouble()*MaxRadius;
-        randomLoc = centroid + randUnitVec*randDistance;
-        
-        closestDist = FLT_MAX;
-        for (auto it = masses.begin(); it != masses.end(); ++it){
-            if (glm::distance((*it)->pos, randomLoc) < closestDist)
-                closestDist = glm::distance((*it)->pos, randomLoc);
-        }
-    } while (closestDist < 1.2 || closestDist > 2 || randomLoc[1] < GROUND_LEVEL);
-    
-    return randomLoc;
-}
-
-void Robot::attachMass(int connections, Mass *m){
-    
-    if (masses.size() < connections)// maybe remove?
-        return;
-    
-    Mass *closestMasses[connections];
-    double closestMassesDists[connections];
-    for (int i=0; i<connections; i++) {
-        closestMasses[i] = NULL;
-        closestMassesDists[i] = -1;
-    }
-
-    //std::unordered_set<Mass *>::iterator it;
-    for (int i = 0; i < connections; i++){
-        for (Mass *m : masses){
-            bool noConflicts = true;
-            for (int j=0; j<i; j++)
-                noConflicts = noConflicts && (m != closestMasses[j]);
-            double distToCheck = glm::distance(m->pos, m->pos);
-            if (noConflicts & (closestMasses[i] == NULL || distToCheck < closestMassesDists[i])){
-                closestMasses[i] = m;
-                closestMassesDists[i] = distToCheck;
-            }
-        }
-    }
-    
-    addMass(m);
-    for (int i = 0; i < connections; i++)
-        addSpring(m,closestMasses[i],SPRING_CONST);
-}
-
-void Robot::removeMass(Mass *m){
-    for (Spring *spr : m->springs){
-        if (std::get<0>(springsMap[spr]) == m){
-            std::get<1>(springsMap[spr])->springs.erase(spr);
-        } else {
-            std::get<0>(springsMap[spr])->springs.erase(spr);
-        }
-        springsMap.erase(spr);
-        delete spr;
-    }
-    //masses.erase(m);
-    masses.erase(std::remove(masses.begin(), masses.end(), m), masses.end());
-    delete m;
-}
-
 void Robot::addMass(Mass *m){
     masses.push_back(m);
 }
 
 //MARK: - Spring Params
 Spring *Robot::addSpring(Mass *m1, Mass *m2, double constant){
-    static double phase = 0;
-    const double amplitude = 0.05;
     Spring *s = new Spring(m1->mp(),m2->mp(),constant,0,0,0);
-    phase += 0.22;
     springsMap.insert({s,std::make_tuple(m1,m2)});
+    springList.push_back(s);
     m1->springs.insert(s);
     m2->springs.insert(s);
     return s;
@@ -146,14 +47,10 @@ glm::dvec3 Robot::calcCentroid(){
     return centroid * (1/double(masses.size()));
 }
 
-
 std::vector<Spring *> Robot::getSprings(){
-    std::vector<Spring *> output;
-    for(auto it = springsMap.begin(); it != springsMap.end(); ++it) {
-        output.push_back(it->first);
-    }
-    return output;
+    return springList;
 }
+
 // MARK: operator=
 Robot& Robot::operator=(const Robot& old_robot){
 //    std::cout << "Copied!\n";
@@ -172,11 +69,10 @@ Robot& Robot::operator=(const Robot& old_robot){
         oldSpringToNew.insert({s,new Spring(*s)});
     }
     
-    //orderedListOfSprings = old_robot.orderedListOfSprings;
-    orderedListOfSprings.clear();
-    for (int i=0; i<old_robot.orderedListOfSprings.size(); i++){
-        Spring *old_spring = old_robot.orderedListOfSprings[i];
-        orderedListOfSprings.push_back(oldSpringToNew[old_spring]);
+    springList.clear();
+    for (int i=0; i<old_robot.springList.size(); i++){
+        Spring *old_spring = old_robot.springList[i];
+        springList.push_back(oldSpringToNew[old_spring]);
     }
     
     

@@ -55,7 +55,7 @@ Robot learn::learnNeuralNetworkPareto(int generations){
 #pragma omp parallel for
         for (long k=0; k<numEvalsThisGen; k++){
             if (k == numEvalsThisGen-1){
-                population[CUR_POPULATION_SIZE+k] = Individual(Layered);
+                population[CUR_POPULATION_SIZE+k] = Individual(Unstructured);
                 //printf(" %f(1)",score);
             } else if (k >= CUR_POPULATION_SIZE/2){
                 Individual offspring = population[helper::myrand(CUR_POPULATION_SIZE/2)];
@@ -73,7 +73,8 @@ Robot learn::learnNeuralNetworkPareto(int generations){
         
         totalNumEvals += numEvalsThisGen;
         
-        nonDominatedSort(population);
+        //nonDominatedSort(population);
+        std::sort(population.begin(),population.end(),Individual::compSpeed);
         if (population.size() > MAX_POP_SIZE){
             population.erase(population.begin()+MAX_POP_SIZE, population.end());
         }
@@ -158,14 +159,14 @@ void learn::nonDominatedSort(std::vector<Individual> &population){
         }
         if (front.size() >= 2 && maxSpeed - minSpeed > 0 && maxAge - minAge > 0){
             //speed
-            std::sort(front.begin(), front.end(), Individual::compSpeed);
+            std::sort(front.begin(), front.end(), Individual::compSpeedPtr);
             front[0]->crowdingDistance = FLT_MAX;
             front[front.size()-1]->crowdingDistance = FLT_MAX;
             for (int i=1; i<front.size()-1; i++)
                 front[i]->crowdingDistance += (front[i+1]->speed - front[i-1]->speed)/(maxSpeed-minSpeed);
             
             //age
-            std::sort(front.begin(), front.end(), Individual::compAge);
+            std::sort(front.begin(), front.end(), Individual::compAgePtr);
             front[0]->crowdingDistance = FLT_MAX;
             front[front.size()-1]->crowdingDistance = FLT_MAX;
             for (int i=1; i<front.size()-1; i++)

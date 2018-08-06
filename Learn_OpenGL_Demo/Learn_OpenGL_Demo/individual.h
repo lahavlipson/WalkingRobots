@@ -21,7 +21,7 @@ public:
     //For sorting
     std::vector<Individual *> dominationSet;
     int dominatedCount;
-    double crowdingDistance;
+    double crowdingDistance = -1.0;
     int rank = -300;
     
     //Properties
@@ -74,12 +74,16 @@ public:
             return nullptr;
     }
     
-    static bool compSpeed(Individual *i, Individual *j){
-        return i->speed < j->speed;
+    static bool compSpeedPtr(Individual *i, Individual *j){
+        return i->speed > j->speed;
     }
     
-    static bool compAge(Individual *i, Individual *j){
-        return i->age < j->age;
+    static bool compSpeed(Individual i, Individual j){
+        return compSpeedPtr(&i, &j);
+    }
+    
+    static bool compAgePtr(Individual *i, Individual *j){
+        return i->age > j->age;
     }
     
     virtual ~Individual(){

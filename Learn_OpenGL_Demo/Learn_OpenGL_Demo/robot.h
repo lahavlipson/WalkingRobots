@@ -29,6 +29,7 @@
 #include <iostream>
 #include "helper.h"
 #include "neural_network.h"
+#include "robot_genome.h"
 
 const double GRAVITY = -9.81;
 const double GROUND_LEVEL = 0.0;
@@ -36,7 +37,7 @@ const double TIME_TO_RECORD = 40.0;
 
 class Robot {
     
-public:
+private:
     
     //Used for updating weights
     std::vector<Spring *> springList;
@@ -46,11 +47,11 @@ public:
         if (network){
             assert(springList.size() > 1);
             network->evaluate(springList);
-        } else
-            printf("Network is NULL\n");
+        } /*else
+            printf("Network is NULL\n");*/
     }
     
-//public:
+public:
     std::vector<Mass *> masses;
     std::mutex *mtx = NULL;
     std::unordered_map<Spring *,std::tuple<Mass *, Mass *>> springsMap;
@@ -65,7 +66,7 @@ public:
     
     Robot(std::mutex *mutex, double freq):mtx(mutex),frequency(freq){}
     
-    Robot(const std::string encoding);
+    Robot(const RobotGenome genome);
     
     Robot(){}
     

@@ -16,6 +16,57 @@
 #include <stdio.h>
 #include <sstream>
 
+Robot::Robot(RobotGenome genome){
+    std::unordered_map<int,std::tuple<Mass *, Mass *>> idMappings;
+    for (int i=0; i<genome.size(); i++){
+        GenomeBase genomeBase = genome[i];
+        std::cout << genomeBase << "\n";
+        if (genomeBase.isLateral()){
+            Mass *m1 = new Mass(genomeBase.getLoc(), MASS_WEIGHT);
+            Mass *m2 = new Mass(genomeBase.getSibLoc(), MASS_WEIGHT);
+            idMappings.insert({genomeBase.ID, std::make_tuple(m1,m2)});
+            addMass(m1);addMass(m2);
+            for (int neighbor_id : genomeBase.neighbors){//for all neighbors
+                assert(idMappings.find(neighbor_id) != idMappings.end());
+                Mass *neighborMass1 = std::get<0>(idMappings.at(neighbor_id));
+                Mass *neighborMass2 = std::get<1>(idMappings.at(neighbor_id));
+                
+                if (neighbor_id == genomeBase.ID){ //special case
+                    printf("#1\n");
+                    addSpring(m1,m2, SPRING_CONST);
+                } else if (neighborMass2) {//neighbor is also lateral
+                    printf("#2\n");
+                    addSpring(m1,neighborMass1, SPRING_CONST);
+                    addSpring(m2,neighborMass2, SPRING_CONST);
+                } else { //neighbor is center
+                    printf("#3\n");
+                    addSpring(m1,neighborMass1, SPRING_CONST);
+                    addSpring(m2,neighborMass1, SPRING_CONST);
+                }
+            }
+        } else { //current genome is center
+            Mass *m = new Mass(genomeBase.getLoc(), MASS_WEIGHT);
+            idMappings.insert({genomeBase.ID, std::make_tuple(m,nullptr)});
+            addMass(m);
+            for (int neighbor_id : genomeBase.neighbors){//for all neighbors
+                assert(idMappings.find(neighbor_id) != idMappings.end());
+                assert(neighbor_id != genomeBase.ID);
+                Mass *neighborMass1 = std::get<0>(idMappings.at(neighbor_id));
+                Mass *neighborMass2 = std::get<1>(idMappings.at(neighbor_id));
+                
+                if (neighborMass2) {//neighbor is lateral
+                    printf("#4\n");
+                    addSpring(m,neighborMass1, SPRING_CONST);
+                    addSpring(m,neighborMass2, SPRING_CONST);
+                } else { //neighbor is also center
+                    printf("#5\n");
+                    addSpring(m,neighborMass1, SPRING_CONST);
+                }
+            }
+        }
+    }
+}
+
 std::ostream &operator<<(std::ostream &os, Robot &rob){
     os << rob.masses.size() << "$" << rob.springsMap.size() << "$";
     for (Mass *m : rob.masses)

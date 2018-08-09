@@ -27,6 +27,7 @@
 #include "glp.h"
 #include "unstructured_neural_network.h"
 #include "individual.h"
+#include "robot_genome.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -66,13 +67,31 @@ int main()
     srand(time(0));
     rand();
     
+//    RobotGenome gb;
+//
+//    gb.extend();
+//    gb.extend();
+//    gb.extend();
+//
+//    std::cout << gb << std::endl;
+//
+//    gb.writeTo("/Users/lahavlipson/Desktop/gbout.csv");
+    
+    RobotGenome gb(helper::csvToVec("/Users/lahavlipson/Desktop/gbout.csv"));
+    
+    gb.removeRandomBase();
+    gb.extend();
+
+    rob = Robot(gb);
+    
+    
 //    rob = starting_models::getTetrahedron();
     
-    UnstructuredNeuralNetwork nn2(helper::csvToVec("/Users/lahavlipson/Desktop/Robot_Simulations/Comparisons/nsga-unstructured/bestNN.csv"));
-    rob = starting_models::getArrow();
-    rob.setNN(&nn2);
+//    UnstructuredNeuralNetwork nn2(helper::csvToVec("/Users/lahavlipson/Desktop/Robot_Simulations/Comparisons/nsga-unstructured/bestNN.csv"));
+//    rob = starting_models::getArrow();
+//    rob.setNN(&nn2);
 
-//    rob = learn::learnNeuralNetworkPareto(40);
+    //rob = learn::learnNeuralNetworkPareto(200);
     
     #ifdef enable_graphics
     std::thread thrd = std::thread(runSim, &rob);

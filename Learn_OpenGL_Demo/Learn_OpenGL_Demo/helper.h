@@ -101,7 +101,11 @@ namespace helper {
     }
     
     inline double myranddouble(){
-        return myrand(1000000)/1000000.0;
+        return myrand(1000000)/1000000.0;//between 0 and 1
+    }
+    
+    inline double myrandrange(double min, double max){
+        return myranddouble()*(max-min)+min;
     }
     
     inline double calcMean(std::vector<double> vec){
